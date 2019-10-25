@@ -1,0 +1,10 @@
+{
+  "name": "hithttp",
+  "version": "1.0.0",
+  "description": "Open http server for everyone*",
+  "main": "app.js",
+  "repository": "https://github.com/hithttp/hithttp.git",
+  "author": "Ramananda Panda <ramanandapanda@hotmail.com>",
+  "license": "MIT",
+  "private": false
+}
