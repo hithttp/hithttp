@@ -7,7 +7,7 @@ import { ConfigModule } from './config/config.module';
 
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
-let  config = dotenv.parse(fs.readFileSync("development.env"));
+let  config = dotenv.parse(fs.readFileSync(process.env.NODE_ENV+".env"));
 
 @Module({
   imports: [UsersModule,ConfigModule,
