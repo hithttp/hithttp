@@ -12,9 +12,9 @@ let  config = dotenv.parse(fs.readFileSync(`${process.env.NODE_ENV || 'developme
 @Module({
   imports: [UsersModule,ConfigModule,
     TypeOrmModule.forRoot({
-      type: "mysql",
-      host: "127.0.0.1",
-      port: 3306,
+      type: "postgres",
+      host: "hithttp.cr7x02jfhqxs.us-east-2.rds.amazonaws.com",
+      port: 5432,
       username: config["DATABASE_USER"],
       password: config["DATABASE_PASSWORD"],
       database: config["DATABASE_NAME"],
