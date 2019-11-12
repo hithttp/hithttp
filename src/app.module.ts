@@ -7,14 +7,14 @@ import { ConfigModule } from './config/config.module';
 
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
-let  config = dotenv.parse(fs.readFileSync(process.env.NODE_ENV+".env"));
+let  config = dotenv.parse(fs.readFileSync(`${process.env.NODE_ENV || 'development'}.env`));
 
 @Module({
   imports: [UsersModule,ConfigModule,
     TypeOrmModule.forRoot({
-      type: "postgres",
+      type: "mysql",
       host: "127.0.0.1",
-      port: 5432,
+      port: 3306,
       username: config["DATABASE_USER"],
       password: config["DATABASE_PASSWORD"],
       database: config["DATABASE_NAME"],
