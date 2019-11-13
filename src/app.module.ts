@@ -7,13 +7,19 @@ import { ConfigModule } from './config/config.module';
 
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
-let  config = dotenv.parse(fs.readFileSync(`${process.env.NODE_ENV || 'development'}.env`));
+let config = {
+  DATABASE_USER: process.env.DATABASE_USER,
+  DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
+  DATABASE_URL: process.env.DATABASE_URL,
+  DATABASE_NAME:process.env.DATABASE_NAME
+};
 
+console.log(config)
 @Module({
-  imports: [UsersModule,ConfigModule,
+  imports: [UsersModule, ConfigModule,
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: "hithttp.cr7x02jfhqxs.us-east-2.rds.amazonaws.com",
+      host: config.DATABASE_URL,
       port: 5432,
       username: config["DATABASE_USER"],
       password: config["DATABASE_PASSWORD"],
