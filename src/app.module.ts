@@ -11,9 +11,17 @@ let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
   DATABASE_URL: process.env.DATABASE_URL,
-  DATABASE_NAME:process.env.DATABASE_NAME
+  DATABASE_NAME: process.env.DATABASE_NAME
 };
-
+if (!config.DATABASE_NAME) {
+  let envConfig = dotenv.parse(fs.readFileSync('development.env'))
+  config = {
+    DATABASE_USER: envConfig.DATABASE_USER,
+    DATABASE_PASSWORD: envConfig.DATABASE_PASSWORD,
+    DATABASE_URL: envConfig.DATABASE_URL,
+    DATABASE_NAME: envConfig.DATABASE_NAME
+  }
+}
 console.log(config)
 @Module({
   imports: [UsersModule, ConfigModule,
