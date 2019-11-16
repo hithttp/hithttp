@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
+import { ResourceModule } from './resource/resource.module';
 
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
@@ -22,7 +23,6 @@ if (!config.DATABASE_NAME) {
     DATABASE_NAME: envConfig.DATABASE_NAME
   }
 }
-console.log(config)
 @Module({
   imports: [UsersModule, ConfigModule,
     TypeOrmModule.forRoot({
@@ -35,7 +35,8 @@ console.log(config)
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    AuthModule],
+    AuthModule,
+    ResourceModule],
   controllers: [AppController],
 })
 export class AppModule { }
