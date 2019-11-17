@@ -9,7 +9,10 @@ export class Resource {
     @IsOptional()
     @PrimaryGeneratedColumn('uuid')
     id: string;
-
+   
+    @Column()
+    @IsString()
+    name: string;
 
     @Column({type:"text"})
     @IsString()

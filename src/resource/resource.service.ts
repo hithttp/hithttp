@@ -1,8 +1,9 @@
-import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Logger, InternalServerErrorException, ConflictException } from '@nestjs/common';
 import { Resource } from './resource.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { UpdateResource } from './dtos/updateResource.dto';
 const logger = new Logger("ResourceService")
 
 @Injectable()
@@ -15,10 +16,14 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
     }
 
     async create(resource: Resource): Promise<Resource> {
+        let existingResource = await this.resRepository.findOne({ where: { name: resource.name, userId: resource.userId } });
+        if (existingResource) {
+            throw new ConflictException("Resource already exists");
+        }
         let newRes = this.resRepository.create(resource);
         try {
             await this.resRepository.save(newRes);
-          
+
             return newRes;
         } catch (e) {
             logger.error(e)
@@ -26,9 +31,41 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
         }
     }
 
-    async findAll(userId:string): Promise<Resource[]> {
+    async findAll(userId: string): Promise<Resource[]> {
         try {
-            return  this.resRepository.find({where:{userId}});
+            return this.resRepository.find({ where: { userId } });
+        } catch (e) {
+            logger.log(e)
+            throw new InternalServerErrorException("Failed to get resource List");
+        }
+    }
+    /**
+     * 
+     * @param resId 
+     * @param userId 
+     * @param res 
+     */
+    async update(resId: string, userId: string, res: Resource): Promise<any> {
+        try {
+            let existingResource = await this.resRepository.findOne({ where: { name: res.name, userId: userId } });
+            if (existingResource && existingResource.id != resId) {
+                throw new ConflictException("There is another resource with the same name");
+            }
+            return this.resRepository.update({ id: resId }, res);
+        } catch (e) {
+            logger.log(e)
+            throw new InternalServerErrorException("Failed to get resource List");
+        }
+    }
+
+    /**
+     * 
+     * @param id 
+     * @param userId 
+     */
+    async delete(id: string, userId: string): Promise<any> {
+        try {
+            return this.resRepository.delete({id,userId})
         } catch (e) {
             logger.log(e)
             throw new InternalServerErrorException("Failed to get resource List");

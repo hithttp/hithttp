@@ -4,7 +4,7 @@ export enum RequestMethods {
     "GET"="GET","POST"="POST","PUT"="PUT","OPTIONS"="OPTIONS","DELETE"="DELETE"
    }
 
-export class CreateResource {
+export class UpdateResource {
     @ApiModelProperty()
     @IsString()
     name: string;
@@ -16,7 +16,5 @@ export class CreateResource {
     @IsArray()
     @IsEnum(RequestMethods,{each:true})
     method: RequestMethods[];
-
-    @ApiModelProperty()
-    userId: string;
+    
 }
