@@ -34,6 +34,7 @@ export class ResourceController {
         let resource = new Resource();
         resource.name = body.name;
         resource.method = body.method;
+        body.schema.id = body.name
         resource.schema = JSON.stringify(body.schema);
         resource.user = req.user;
         try {
