@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { IsString, IsEmail, IsUUID, Length, IsOptional, IsPhoneNumber, IsEnum, IsMobilePhone } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { Resource } from '../resource/resource.entity';
 
 @Entity()
 export class User {
@@ -14,6 +15,11 @@ export class User {
     @IsString()
     token: string;
 
+    @IsOptional()
+    @Column({ length: "8" ,nullable: true})
+    @IsString()
+    uniqkey: string;
+
     @ApiModelProperty()
     @Column({ unique: true })
     @IsEmail()
@@ -24,5 +30,8 @@ export class User {
     @IsString()
     @Length(8, 15)
     password: string;
+
+    @OneToMany(type => Resource, res => res.user)
+    resources: Resource[];
 
 }

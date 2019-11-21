@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { UpdateResource } from './dtos/updateResource.dto';
+import { User } from '../users/user.entity';
 const logger = new Logger("ResourceService")
 
 @Injectable()
@@ -16,14 +17,15 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
     }
 
     async create(resource: Resource): Promise<Resource> {
-        let existingResource = await this.resRepository.findOne({ where: { name: resource.name, userId: resource.userId } });
+        let existingResource = await this.resRepository.findOne({ where: { name: resource.name, userId: resource.user.id } });
         if (existingResource) {
             throw new ConflictException("Resource already exists");
         }
         let newRes = this.resRepository.create(resource);
         try {
             await this.resRepository.save(newRes);
-
+            newRes.schema  = JSON.parse(newRes.schema);
+            delete newRes.user;
             return newRes;
         } catch (e) {
             logger.error(e)
@@ -63,9 +65,9 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      * @param id 
      * @param userId 
      */
-    async delete(id: string, userId: string): Promise<any> {
+    async delete(id: string, user: User): Promise<any> {
         try {
-            return this.resRepository.delete({id,userId})
+            return this.resRepository.delete({id,user})
         } catch (e) {
             logger.log(e)
             throw new InternalServerErrorException("Failed to get resource List");

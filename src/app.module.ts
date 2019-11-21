@@ -8,6 +8,7 @@ import { ResourceModule } from './resource/resource.module';
 
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+import { ApiModule } from './api/api.module';
 let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
@@ -34,9 +35,11 @@ if (!config.DATABASE_NAME) {
       database: config["DATABASE_NAME"],
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      logging:"all"
     }),
     AuthModule,
-    ResourceModule],
+    ResourceModule,
+  ApiModule],
   controllers: [AppController],
 })
 export class AppModule { }

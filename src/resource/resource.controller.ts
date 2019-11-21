@@ -34,9 +34,8 @@ export class ResourceController {
         let resource = new Resource();
         resource.name = body.name;
         resource.method = body.method;
-        resource.model = JSON.stringify(body.model);
-        resource.userId = req.user.id;
-
+        resource.schema = JSON.stringify(body.schema);
+        resource.user = req.user;
         try {
             return await this.resService.create(resource);
         } catch (e) {
@@ -50,7 +49,7 @@ export class ResourceController {
 
     /**
     * 
-    * Create Resource
+    * Resource List
     */
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Resource List' })
@@ -63,7 +62,7 @@ export class ResourceController {
     async ResList(@Request() req: any) {
         try {
             let resList = await this.resService.findAll(req.user.id);
-            return resList.map(res => { return { ...res, model: JSON.parse(res.model) } })
+            return resList.map(res => { return { ...res, schema: JSON.parse(res.schema) } })
         } catch (e) {
             throw new InternalServerErrorException("Failed to create REsource")
         }
@@ -83,15 +82,15 @@ export class ResourceController {
         description: 'The record has been successfully updated.',
     })
     @ApiBearerAuth()
-    async updateResource(@Request() req: any,@Body() body:UpdateResource) {
+    async updateResource(@Request() req: any, @Body() body: UpdateResource) {
         try {
             let res = new Resource();
             res.method = body.method;
-            res.model = JSON.stringify(body.model);
+            res.schema = JSON.stringify(body.schema);
             res.name = body.name;
-            await this.resService.update(req.params.resId,req.user.id,res);
-            
-         return {...res,model: JSON.parse(res.model) };
+            await this.resService.update(req.params.resId, req.user.id, res);
+
+            return { ...res, schema: JSON.parse(res.schema) };
         } catch (e) {
             if (e.status == 409) {
                 throw e
@@ -101,32 +100,32 @@ export class ResourceController {
 
     }
 
-        /**
+    /**
     * 
-    * Update Resource
+    * Delete Resource
     */
-   @UseGuards(AuthGuard('jwt'))
-   @ApiOperation({ title: 'Update Resource' })
-   @Delete(":resId")
-   @ApiResponse({
-       status: 200,
-       description: 'The record has been successfully updated.',
-   })
-   @ApiBearerAuth()
-   async deleteResource(@Request() req: any) {
-       try {
-         await this.resService.delete(req.params.resId,req.user.id);
-         return {
-             status:"success",
-             message:"Successfully deleted"
-         }
-       } catch (e) {
-           if (e.status == 409) {
-               throw e
-           }
-           throw new InternalServerErrorException("Failed to create REsource")
-       }
+    @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ title: 'Delete Resource' })
+    @Delete(":resId")
+    @ApiResponse({
+        status: 200,
+        description: 'The record has been successfully updated.',
+    })
+    @ApiBearerAuth()
+    async deleteResource(@Request() req: any) {
+        try {
+            await this.resService.delete(req.params.resId, req.user.id);
+            return {
+                status: "success",
+                message: "Successfully deleted"
+            }
+        } catch (e) {
+            if (e.status == 409) {
+                throw e
+            }
+            throw new InternalServerErrorException("Failed to create REsource")
+        }
 
-   }
+    }
 
 }

@@ -10,7 +10,7 @@ export class CreateResource {
     name: string;
 
     @ApiModelProperty()
-    model: Object;
+    schema: Object;
    
     @ApiModelProperty({type:[RequestMethods],enum: Object.keys(RequestMethods)})
     @IsArray()

@@ -16,18 +16,14 @@ export class Resource {
 
     @Column({type:"text"})
     @IsString()
-    model: string;
+    schema: string;
 
     @Column("text",{array: true})
     method: string[];
    
-    @Column("uuid")
-    @ManyToOne(_type => User, {
-        cascade: true
-    })
-    @JoinColumn({ name: "userId" })
     @ApiModelProperty()
-    userId: string;
+    @ManyToOne(_type => User,  user => user.id)
+    user: User;
     
     @IsOptional()
     @CreateDateColumn()
