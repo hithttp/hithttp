@@ -31,7 +31,7 @@ export class User {
     @Length(8, 15)
     password: string;
 
-    @OneToMany(type => Resource, res => res.user)
+    @OneToMany(type => Resource, resource => resource.user,{ eager: true })
     resources: Resource[];
 
 }

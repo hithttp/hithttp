@@ -14,15 +14,15 @@ export class Resource {
     @IsString()
     name: string;
 
-    @Column({type:"text"})
-    @IsString()
-    schema: string;
+    @Column({ type: "jsonb", nullable: true })
+    // @IsString()
+    schema: any;
 
     @Column("text",{array: true})
     method: string[];
    
     @ApiModelProperty()
-    @ManyToOne(_type => User,  user => user.id)
+    @ManyToOne(_type => User,  user => user.resources)
     user: User;
     
     @IsOptional()
