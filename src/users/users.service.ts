@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { User } from './user.entity';
+import { generate } from 'randomstring';
 const logger = new Logger("UsersService")
 
 @Injectable()
@@ -23,6 +24,10 @@ export class UsersService extends TypeOrmCrudService<User> {
         let user = this.userRepository.create(req);
         user.password = hashSync(user.password, 10);
         user.token = v4();
+        user.uniqkey = generate({
+            length: 8,
+            charset: 'alphanumeric'
+          });
         try {
             await this.userRepository.save(user);
             delete user.password;

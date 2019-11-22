@@ -9,6 +9,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const options = new DocumentBuilder()
+    .setSchemes("https")
     .setTitle('Hit Http Api Docs')
     .setDescription('Find all the api info running on this server')
     .addBearerAuth()

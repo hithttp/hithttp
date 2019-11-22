@@ -4,7 +4,6 @@ import { UsersService } from './users.service'
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdateUser } from './dto/update-user.dto';
 import {
     ApiBearerAuth,
     ApiOperation,
