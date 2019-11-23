@@ -13,17 +13,16 @@ export class AuthService {
         private readonly jwtService: JwtService
     ) { }
 
-    async validateUser(loginUser:LoginUser): Promise<any> {
-        const user = await this.usersService.findOne({ where: {email: loginUser.email} });
-        if (user && compareSync(loginUser.password,user.password)) {
+    async validateUser(loginUser: LoginUser): Promise<any> {
+        const user = await this.usersService.findOne({ where: { email: loginUser.email } });
+        if (user && compareSync(loginUser.password, user.password)) {
             const { password, ...result } = user;
             return result;
         }
         return null;
     }
-
-       async login(user: any) {
-        const payload = { token: user.token};
+    async login(user: any) {
+        const payload = { token: user.token };
         return {
             access_token: this.jwtService.sign(payload),
         };

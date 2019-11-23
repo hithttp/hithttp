@@ -35,11 +35,12 @@ export class ResourceController {
         resource.name = body.name;
         resource.method = body.method;
         body.schema.id = body.name
-        resource.schema = JSON.stringify(body.schema);
+        resource.schema = body.schema;
         resource.user = req.user;
         try {
             return await this.resService.create(resource);
         } catch (e) {
+            console.log(e)
             if (e.status == 409) {
                 throw e
             }
@@ -63,7 +64,7 @@ export class ResourceController {
     async ResList(@Request() req: any) {
         try {
             let resList = await this.resService.findAll(req.user.id);
-            return resList.map(res => { return { ...res, schema: JSON.parse(res.schema) } })
+            return resList
         } catch (e) {
             throw new InternalServerErrorException("Failed to create REsource")
         }
