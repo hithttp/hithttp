@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { ResourceModule } from './resource/resource.module';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import { ApiModule } from './api/api.module';
+import { join } from 'path';
 let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
@@ -25,7 +26,11 @@ if (!config.DATABASE_NAME) {
   }
 }
 @Module({
-  imports: [UsersModule, ConfigModule,
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+    UsersModule, ConfigModule,
     TypeOrmModule.forRoot({
       type: "postgres",
       host: config.DATABASE_URL,
