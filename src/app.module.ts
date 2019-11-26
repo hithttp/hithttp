@@ -40,7 +40,7 @@ if (!config.DATABASE_NAME) {
       database: config["DATABASE_NAME"],
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
-      logging:"all"
+      // logging:"all"
     }),
     AuthModule,
     ResourceModule,

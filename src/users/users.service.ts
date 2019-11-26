@@ -34,11 +34,11 @@ export class UsersService extends TypeOrmCrudService<User> {
             await this.userRepository.save(user);
             delete user.password;
             const payload = { 
-                token: user.token,
-                uniqkey:user.uniqkey
+                token: user.token
             };
             return {
                 access_token: this.jwtService.sign(payload),
+                uniqkey:user.uniqkey
             };
         } catch (e) {
             logger.error(e)

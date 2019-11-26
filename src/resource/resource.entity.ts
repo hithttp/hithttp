@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { IsString,IsOptional } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
+import { Api } from '../api/api.entity';
 
 
 @Entity()
@@ -25,6 +26,9 @@ export class Resource {
     @ManyToOne(_type => User,  user => user.resources)
     user: User;
     
+    @OneToMany(type => Api, api => api.resource,{ eager: true })
+    apis: Api[];
+
     @IsOptional()
     @CreateDateColumn()
     createAt:string

@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { IsString, IsEmail, IsUUID, Length, IsOptional, IsPhoneNumber, IsEnum, IsMobilePhone } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { Resource } from '../resource/resource.entity';
+import { Api } from '../api/api.entity';
 
 @Entity()
 export class User {
@@ -33,5 +34,8 @@ export class User {
 
     @OneToMany(type => Resource, resource => resource.user,{ eager: true })
     resources: Resource[];
+
+    @OneToMany(type => Api, api => api.user,{ eager: true })
+    apis: Api[];
 
 }

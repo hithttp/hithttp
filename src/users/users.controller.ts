@@ -35,7 +35,7 @@ export class UsersController {
     })
     @ApiBearerAuth()
     async getProfile(@Request() req: any) {
-        let users = await this.userService.find({ where: { token: req.user.token }, select: [ "email"] });
+        let users = await this.userService.find({ where: { token: req.user.token }, select: [ "email","uniqkey"] });
         if (!users.length) {
             throw new NotFoundException("User Not Found");
         }
