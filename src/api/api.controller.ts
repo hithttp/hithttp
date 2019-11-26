@@ -110,7 +110,7 @@ export class ApiController {
     * 
     * Generic Get Each
     */
-   @ApiOperation({ title: 'Generic Get' })
+   @ApiOperation({ title: 'Generic Put' })
    @Put(":uniqKey/:resName/:apiId")
    @ApiResponse({
        status: 200,
