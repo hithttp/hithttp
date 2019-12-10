@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { ResourceModule } from './resource/resource.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
+// import { ServeStaticModule } from '@nestjs/serve-static';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import { ApiModule } from './api/api.module';
@@ -27,9 +27,6 @@ if (!config.DATABASE_NAME) {
 }
 @Module({
   imports: [
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-    }),
     UsersModule, ConfigModule,
     TypeOrmModule.forRoot({
       type: "postgres",

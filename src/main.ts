@@ -4,7 +4,9 @@ import { AppModule } from './app.module';
 import * as helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as rateLimit from 'express-rate-limit';
+import * as csurf from 'csurf';
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,8 +19,15 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
+  app.useStaticAssets(join(__dirname, '..', 'public'),{
+    index:false,
+    etag:true,
+  });
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
   app.use(helmet());
-  //TODO:: CORS implementation
+  app.enableCors();
+
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
@@ -26,6 +35,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalPipes(new ValidationPipe())
+  // app.use(csurf());
   await app.listen(3000);
 }
 bootstrap();
