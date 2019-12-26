@@ -16,7 +16,13 @@ a {
   a:hover {
     text-decoration: none;
     color: #4586FF; }
-
+.logo-small{
+  font-family: 'Staatliches', cursive;
+}
+.sidebar{
+  -webkit-transition: width .3s;
+  transition: width .3s;
+}
 h1, h2, h3, h4, h5,
 .h1, .h2, .h3, .h4, .h5 {
   line-height: 1.45;

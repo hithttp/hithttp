@@ -4,9 +4,10 @@ import { AppModule } from './app.module';
 import * as helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as rateLimit from 'express-rate-limit';
-import * as csurf from 'csurf';
+import * as hbs from "hbs";
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
+import cookieParser = require('cookie-parser');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,15 +20,19 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
-  app.useStaticAssets(join(__dirname, '..', 'public'),{
-    index:false,
-    etag:true,
+  app.useStaticAssets(join(__dirname, '..', 'public'), {
+    index: false,
+    etag: true,
   });
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  hbs.registerPartials(join(__dirname, '..', 'views/dashboard/partials'))
+  hbs.registerHelper("date", function () {
+    return new Date().getFullYear();
+  })
   app.setViewEngine('hbs');
   app.use(helmet());
   app.enableCors();
-
+  app.use(cookieParser())
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
