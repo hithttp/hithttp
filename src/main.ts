@@ -4,7 +4,10 @@ import { AppModule } from './app.module';
 import * as helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as rateLimit from 'express-rate-limit';
+import * as hbs from "hbs";
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
+import cookieParser = require('cookie-parser');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,8 +20,30 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
+  app.useStaticAssets(join(__dirname, '..', 'public'), {
+    index: false,
+    etag: true,
+  });
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  hbs.registerPartials(join(__dirname, '..', 'views/dashboard/partials'))
+  hbs.registerHelper("date", function () {
+    return new Date().getFullYear();
+  })
+  hbs.registerHelper("format-date", function (d) {
+    let nd =  new Date(d);
+    return  nd.toDateString()+" "+nd.getHours()+":"+nd.getMinutes()+":"+nd.getSeconds()
+  })
+  hbs.registerHelper("section",function(name, options) { 
+    if (!this._sections) this._sections = {};
+      this._sections[name] = options.fn(this); 
+      return null;
+    }
+)
+
+  app.setViewEngine('hbs');
   app.use(helmet());
-  //TODO:: CORS implementation
+  app.enableCors();
+  app.use(cookieParser())
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
@@ -26,6 +51,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalPipes(new ValidationPipe())
+  // app.use(csurf());
   await app.listen(3000);
 }
 bootstrap();

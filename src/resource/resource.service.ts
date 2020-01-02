@@ -24,7 +24,6 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
         let newRes = this.resRepository.create(resource);
         try {
             await this.resRepository.save(newRes);
-            newRes.schema  = JSON.parse(newRes.schema);
             delete newRes.user;
             return newRes;
         } catch (e) {

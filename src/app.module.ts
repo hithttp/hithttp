@@ -1,14 +1,16 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { ResourceModule } from './resource/resource.module';
-
+// import { ServeStaticModule } from '@nestjs/serve-static';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import { ApiModule } from './api/api.module';
+import { CookieValidatorMiddleware } from './common/middlewares/cookie-parser.middleware';
+import { AppService } from './app.service';
 let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
@@ -25,7 +27,8 @@ if (!config.DATABASE_NAME) {
   }
 }
 @Module({
-  imports: [UsersModule, ConfigModule,
+  imports: [
+    UsersModule, ConfigModule,
     TypeOrmModule.forRoot({
       type: "postgres",
       host: config.DATABASE_URL,
@@ -35,11 +38,25 @@ if (!config.DATABASE_NAME) {
       database: config["DATABASE_NAME"],
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
-      logging:"all"
+      // logging:"all"
     }),
     AuthModule,
     ResourceModule,
-  ApiModule],
+    ApiModule],
   controllers: [AppController],
+  providers:[AppService]
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CookieValidatorMiddleware)
+      .forRoutes(
+        { path: 'dashboard', method: RequestMethod.GET },
+        { path: 'models', method: RequestMethod.GET },
+        { path: 'models/*', method: RequestMethod.GET },
+        { path: 'apis', method: RequestMethod.GET },
+        { path: 'access-logs', method: RequestMethod.GET }
+      )
+  }
+
+}

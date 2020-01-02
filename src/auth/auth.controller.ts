@@ -1,4 +1,4 @@
-import { Controller, Get, Request, Post, UseGuards, HttpCode, HttpStatus, Body, NotFoundException, ConflictException } from '@nestjs/common';
+import { Controller, Get, Request, Post, UseGuards, HttpCode, HttpStatus, Body, NotFoundException, ConflictException, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
@@ -23,8 +23,10 @@ export class AuthController {
   @UseGuards(AuthGuard('custom'))
   @Post('login')
   @ApiOperation({ title: 'Login User' })
-  async login(@Request() req: any,@Body() body:LoginUser) {
-    return this.authService.login(req.user);
+  async login(@Request() req: any,@Body() body:LoginUser,@Res() res :any) {
+    let loginRes = await this.authService.login(req.user)
+    res.cookie("__hit_http__session__", loginRes.access_token,{maxAge: 360000}); 
+   return  res.json(loginRes)
   }
 
 
@@ -33,13 +35,12 @@ export class AuthController {
   @ApiOperation({ title: 'Log out' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  async logout(@Request() req: any) {
-
+  async logout(@Request() req: any,@Res() res :any) {
     await this.userService.logout(req.user.id);
-
-    return {
+    res.clearCookie("__hit_http__session__")
+    res.json({
       "statusCode": HttpStatus.OK,
       "success": true
-    }
+    })
   }
 }
