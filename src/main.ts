@@ -29,6 +29,17 @@ async function bootstrap() {
   hbs.registerHelper("date", function () {
     return new Date().getFullYear();
   })
+  hbs.registerHelper("format-date", function (d) {
+    let nd =  new Date(d);
+    return  nd.toDateString()+" "+nd.getHours()+":"+nd.getMinutes()+":"+nd.getSeconds()
+  })
+  hbs.registerHelper("section",function(name, options) { 
+    if (!this._sections) this._sections = {};
+      this._sections[name] = options.fn(this); 
+      return null;
+    }
+)
+
   app.setViewEngine('hbs');
   app.use(helmet());
   app.enableCors();

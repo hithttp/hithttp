@@ -27,6 +27,11 @@ export class User {
     email: string;
 
     @ApiModelProperty()
+    @Column()
+    @IsString()
+    fullname: string;
+
+    @ApiModelProperty()
     @Column({ length: "255" })
     @IsString()
     @Length(8, 15)

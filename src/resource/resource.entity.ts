@@ -26,7 +26,7 @@ export class Resource {
     @ManyToOne(_type => User,  user => user.resources)
     user: User;
     
-    @OneToMany(type => Api, api => api.resource,{ eager: true })
+    @OneToMany(type => Api, api => api.resource)
     apis: Api[];
 
     @IsOptional()

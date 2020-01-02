@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -9,7 +9,8 @@ import { ResourceModule } from './resource/resource.module';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import { ApiModule } from './api/api.module';
-import { join } from 'path';
+import { CookieValidatorMiddleware } from './common/middlewares/cookie-parser.middleware';
+import { AppService } from './app.service';
 let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
@@ -41,7 +42,21 @@ if (!config.DATABASE_NAME) {
     }),
     AuthModule,
     ResourceModule,
-  ApiModule],
+    ApiModule],
   controllers: [AppController],
+  providers:[AppService]
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CookieValidatorMiddleware)
+      .forRoutes(
+        { path: 'dashboard', method: RequestMethod.GET },
+        { path: 'models', method: RequestMethod.GET },
+        { path: 'models/*', method: RequestMethod.GET },
+        { path: 'apis', method: RequestMethod.GET },
+        { path: 'access-logs', method: RequestMethod.GET }
+      )
+  }
+
+}
