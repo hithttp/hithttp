@@ -2,11 +2,16 @@ import { Controller, Get, Render, Res,Request, UseGuards, UsePipes } from '@nest
 import { Response } from 'express';
 import { ApiOperation, ApiUseTags, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { ResourceService } from './resource/resource.service';
 
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService:AppService){}
+  constructor(
+    private readonly appService:AppService,
+    private readonly resService:ResourceService
+    
+    ){}
 
   @ApiExcludeEndpoint()
   @Get()
@@ -40,47 +45,7 @@ export class AppController {
     return  res.render("dashboard/index",{ layout: "dashboard/layout/dashboard", user: req.user });
   }
 
-/** Models operation start */
-@ApiExcludeEndpoint()
-  @Get("models")
-  async models(@Request() req:any,@Res() res :Response) {
-    let models = await this.appService.getModels(req.user.id)
-   
-    return  res.render("dashboard/pages/models/index",{ layout: "dashboard/layout/dashboard", user: req.user,models });
-  }
-  @ApiExcludeEndpoint()
-  @Get("models/new")
-  async newModels(@Request() req:any,@Res() res :Response) {
-    let models = await this.appService.getModels(req.user.id)
-   
-    return  res.render("dashboard/pages/models/create",{ layout: "dashboard/layout/dashboard", user: req.user,models });
-  }
 
-  @ApiExcludeEndpoint()
-  @Get("models/:id/view")
-  async viewModel(@Request() req:any,@Res() res :Response) {
-    let model = await this.appService.getModelDetails(req.params.id)
-    return  res.render("dashboard/pages/models/view",{ layout: "dashboard/layout/dashboard", user: req.user,model });
-  }
-
-   @ApiExcludeEndpoint()
-  @Get("models/:id/edit")
-  async editModel(@Request() req:any,@Res() res :Response) {
-    let models = await this.appService.getModels(req.user.id)
-   
-    return  res.render("dashboard/pages/models/edit",{ layout: "dashboard/layout/dashboard", user: req.user,models });
-  }
-
-  @ApiExcludeEndpoint()
-  @Get("models/:id/delete")
-  async deleteModel(@Request() req:any,@Res() res :Response) {
-    let models = await this.appService.getModels(req.user.id)
-   
-    return  res.render("dashboard/pages/models/delete",{ layout: "dashboard/layout/dashboard", user: req.user,models });
-  }
-
-  
-/** Models operation end */
 
  @ApiExcludeEndpoint()
   @Get("apis")

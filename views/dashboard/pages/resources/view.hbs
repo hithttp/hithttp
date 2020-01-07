@@ -25,7 +25,7 @@
         <div class="card shadow mb-4">
           <div class="card-header py-3">
             <h5 class="m-0 font-weight-bold text-primary">Model Details
-              <a href="/models" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
+              <a href="/resource/list" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
                   class="fas fa-arrow-left fa-sm text-white"></i> Back</a>
             </h5>
           </div>
@@ -40,33 +40,25 @@
               <tbody>
                 <tr>
                   <td><span class="font-weight-bold text-dark">Name</span> </td>
-                  <td>{{model.name}}</td>
+                  <td>{{resource.name}}</td>
                 </tr>
                 <tr>
-                  <td><span class="font-weight-bold text-dark">Methods</span> </td>
-                  <td>
-                    {{#each model.method as |mthd|}}
-                    <label class="badge badge-info">{{mthd}}</label>
-                    {{/each}}
-                  </td>
-                </tr>
-                 <tr>
                   <td><span class="font-weight-bold text-dark">Created On</span> </td>
-                  <td>{{format-date model.createAt}}</td>
+                  <td>{{format-date resource.createAt}}</td>
                 </tr>
-                 <tr>
+                <tr>
                   <td><span class="font-weight-bold text-dark">Last Updated On</span> </td>
-                  <td>{{format-date model.updatedAt}}</td>
+                  <td>{{format-date resource.updatedAt}}</td>
                 </tr>
                 <tr>
                   <td><span class="font-weight-bold text-dark">Schema</span> </td>
                   <td>
                     <ul class="list-group list-group-flush">
-                      {{#each model.schema.properties }}
-                    <li class="list-group-item">{{@key}}: {{this.type}}</li>
-                    {{/each}}
+                      {{#each resource.schema.properties }}
+                      <li class="list-group-item">{{@key}}: {{this.type}}</li>
+                      {{/each}}
                     </ul>
-                   
+
                   </td>
                 </tr>
 

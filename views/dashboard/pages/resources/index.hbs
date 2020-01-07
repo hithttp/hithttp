@@ -24,9 +24,10 @@
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
           <div class="card-header py-3">
-            <h5 class="m-0 font-weight-bold text-primary">Model List
-              <a href="/models/new" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
-                  class="fas fa-download fa-sm text-white"></i> New Model</a>
+            <h5 class="m-0 font-weight-bold text-primary h5">Resource List
+              <a href="/resource/new" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
+                  class="fas fa-download fa-sm text-white"></i> New Resource</a>
+              <span class=" float-right text-sm text-info mr-4 h5">* Your unique Request id is: <code>{{user.uniqkey}}</code> </span>
             </h5>
           </div>
           <div class="card-body">
@@ -35,7 +36,7 @@
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Methods</th>
+                    <th>Base Url</th>
                     <th>Created On</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -44,29 +45,25 @@
                 <tfoot>
                   <tr>
                     <th>Name</th>
-                    <th>Methods</th>
+                    <th>Base Url</th>
                     <th>Created On</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
                   </tr>
                 </tfoot>
                 <tbody>
-                  {{#each models}}
+                  {{#each resources}}
                   <tr>
                     <td>{{name}}</td>
-                    <td>
-                      {{#each method as |mthd|}}
-                      <label class="badge badge-info">{{mthd}}</label>
-                      {{/each}}
-                    </td>
+                    <td><a href="https://{{../host}}/{{../user.uniqkey}}/{{name}}">https://{{../host}}/{{../user.uniqkey}}/{{name}}</a></td>
                     <td>{{format-date createAt}}</td>
                     <td>{{format-date updatedAt}}</td>
                     <td>
-                      <a class="badge badge-info" title="View" href="/models/{{id}}/view"><i
+                      <a class="badge badge-info" title="View" href="/resource/{{id}}/view"><i
                           class="fa fa-eye text-light"></i></a>
-                      <a class="badge badge-primary" href="/models/{{id}}/edit" title="Edit"><i
+                      <a class="badge badge-primary" href="/resource/{{id}}/edit" title="Edit"><i
                           class="fa fa-pencil-alt text-light"></i></a>
-                      <a class="badge badge-danger" href="/models/{{id}}/delete" title="Delete"><i
+                      <a class="badge badge-danger" href="/resource/{{id}}/delete" title="Delete"><i
                           class="fa fa-trash text-light"></i></a>
 
                     </td>
