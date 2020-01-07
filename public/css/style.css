@@ -219,7 +219,7 @@ h1, h2, h3, h4, h5,
   font-weight: bold;
   cursor: pointer; }
   .btn.btn-sm {
-    padding: 10px 20px;
+    padding: 8px 20px;
     font-size: 12px; }
   .btn:before {
     display: none; }
@@ -244,7 +244,6 @@ h1, h2, h3, h4, h5,
 
 .form-control {
   border: 1px solid rgba(0, 0, 0, 0.2);
-  height: 55px;
   background: none !important;
   color: #000 !important;
   font-size: 18px; }
@@ -554,3 +553,29 @@ textarea {
   100% {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
+
+.logo-container {
+  height: 4.375rem;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  z-index: 1;
+}
+.logo-container .rotate-n-15 {
+
+  transform: rotate(-15deg);
+
+}
+.logo-container .brand-icon i {
+  font-size: 2rem;
+}
+
+.logo-container .brand-text {
+  font-family: "Raleway", sans-serif;
+  font-weight: normal;
+}
+    

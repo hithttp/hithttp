@@ -25,7 +25,7 @@ export class AuthController {
   @ApiOperation({ title: 'Login User' })
   async login(@Request() req: any,@Body() body:LoginUser,@Res() res :any) {
     let loginRes = await this.authService.login(req.user)
-    res.cookie("__hit_http__session__", loginRes.access_token,{maxAge: 360000}); 
+    res.cookie("__hit_http__session__", loginRes.access_token,{maxAge: 86400000}); 
    return  res.json(loginRes)
   }
 

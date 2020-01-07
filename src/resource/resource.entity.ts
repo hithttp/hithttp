@@ -20,7 +20,7 @@ export class Resource {
     schema: any;
 
     @Column("text",{array: true})
-    method: string[];
+    methods: string[];
    
     @ApiModelProperty()
     @ManyToOne(_type => User,  user => user.resources)

@@ -12,9 +12,4 @@ export class UpdateResource {
     @ApiModelProperty()
     schema: Object;
    
-    @ApiModelProperty({type:[RequestMethods],enum: Object.keys(RequestMethods)})
-    @IsArray()
-    @IsEnum(RequestMethods,{each:true})
-    method: RequestMethods[];
-    
 }
