@@ -29,14 +29,14 @@ export class ApiController {
         let uniqKey = req.params.uniqKey;
         let resName = req.params.resName;
         try {
-            let resource = await this.apiService.getUserResourceSchema(uniqKey, resName, "POST");
+            let resource = await this.apiService.getUserResourceSchema(uniqKey, resName);
             var v = new Validator();
             // console.log(body,resource.schema)
-
             let { errors } = v.validate(body, resource.schema);
             if (errors.length) {
                 throw new BadRequestException(errors)
             }
+           
             let newSchema = new Api();
             newSchema.id = v4();
             newSchema.data = body;
@@ -68,7 +68,7 @@ export class ApiController {
        let uniqKey = req.params.uniqKey;
        let resName = req.params.resName;
        try {
-        let apiData = await this.apiService.listUserResourceSchema(uniqKey,resName)
+        let apiData = await this.apiService.listUserResourceSchema(uniqKey,resName);
         apiData = apiData.map(api=>{let apit =  {...api,...api.data};delete apit.data; return apit});
         return  apiData;
        } catch (e) {

@@ -24,5 +24,4 @@ export class ResourceModule  implements NestModule {
         { path: 'resource/:id/delete', method: RequestMethod.GET },
       )
   }
-
 }
