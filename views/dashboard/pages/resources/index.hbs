@@ -27,12 +27,15 @@
             <h5 class="m-0 font-weight-bold text-primary h5">Resource List
               <a href="/resource/new" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
                   class="fas fa-download fa-sm text-white"></i> New Resource</a>
-              <span class=" float-right text-sm text-info mr-4 h5">* Your unique Request id is: <code>{{user.uniqkey}}</code> </span>
+              <span class=" float-right text-sm text-info mr-4 h5">* Your unique Request id is:
+                <code>{{user.uniqkey}}</code> </span>
             </h5>
           </div>
           <div class="card-body">
             <div class="table-responsive">
+
               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                {{#if resources.length}}
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -51,11 +54,18 @@
                     <th>Actions</th>
                   </tr>
                 </tfoot>
+                {{else}}
+                <tr>
+                  <td>No resources found</td>
+                </tr>
+                {{/if}}
                 <tbody>
                   {{#each resources}}
                   <tr>
                     <td>{{name}}</td>
-                    <td><a href="https://{{../host}}/{{../user.uniqkey}}/{{name}}">https://{{../host}}/{{../user.uniqkey}}/{{name}}</a></td>
+                    <td><a target="_blank"
+                        href="https://{{../host}}/api/{{../user.uniqkey}}/{{name}}">https://{{../host}}/{{../user.uniqkey}}/{{name}}</a>
+                    </td>
                     <td>{{format-date createAt}}</td>
                     <td>{{format-date updatedAt}}</td>
                     <td>
@@ -63,9 +73,8 @@
                           class="fa fa-eye text-light"></i></a>
                       <a class="badge badge-primary" href="/resource/{{id}}/edit" title="Edit"><i
                           class="fa fa-pencil-alt text-light"></i></a>
-                      <a class="badge badge-danger" href="/resource/{{id}}/delete" title="Delete"><i
+                      <a class="badge badge-danger del-res-btn" data-id="{{id}}" title="Delete"><i
                           class="fa fa-trash text-light"></i></a>
-
                     </td>
                   </tr>
                   {{/each}}
@@ -89,3 +98,47 @@
 
 </div>
 <!-- End of Page Wrapper -->
+{{#section 'script'}}
+<script>
+  "use strict";
+  var fieldNo = 1;
+  $(".del-res-btn").on("click", async (ev) => {
+    ev.preventDefault()
+    let id = $(ev.currentTarget).data("id");
+
+    let res = await fetch("/resource/" + id, {
+      method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      redirect: "follow",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem("HIT_HTTP_access_token")
+      }
+    }).then(async response => {
+      // HTTP 301 response
+      // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
+      if (response.redirected) {
+        window.location.href = response.url;
+        return;
+      }
+      let body = await response.json();
+      if (!response.ok) {
+        $.alert({
+          title: 'OOps!',
+          content: body.message,
+        });
+        return;
+      }
+
+      $.alert({
+        title: 'WOW!',
+        content: 'Succesfully deleted resource'
+      });
+    })
+      .catch(function (err) {
+        console.info(err + " url: " + url);
+      });
+  })
+</script>
+{{/section}}

@@ -1,10 +1,11 @@
-import { Injectable, Logger, InternalServerErrorException, ConflictException } from '@nestjs/common';
+import { Injectable, Logger, InternalServerErrorException, ConflictException, BadRequestException } from '@nestjs/common';
 import { Resource } from './resource.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { UpdateResource } from './dtos/updateResource.dto';
 import { User } from '../users/user.entity';
+import { Api } from '../api/api.entity';
 const logger = new Logger("ResourceService")
 
 @Injectable()
@@ -12,6 +13,8 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
     constructor(
         @InjectRepository(Resource)
         private resRepository: Repository<Resource>,
+        @InjectRepository(Api)
+        private apiRepository: Repository<Api>
     ) {
         super(resRepository);
     }
@@ -47,14 +50,17 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      * @param res 
      */
     async update(resId: string, userId: string, res: Resource): Promise<any> {
+        let existingResource = await this.resRepository.find({ where: { name: res.name, userId: userId } });
+        if (existingResource.length > 1 ) {
+            throw new ConflictException("There is another resource with the same name");
+        }
+        if(existingResource[0].id != resId){
+            throw new InternalServerErrorException("Invalid resource found");
+        }
         try {
-            let existingResource = await this.resRepository.findOne({ where: { name: res.name, userId: userId } });
-            if (existingResource && existingResource.id != resId) {
-                throw new ConflictException("There is another resource with the same name");
-            }
             return this.resRepository.update({ id: resId }, res);
         } catch (e) {
-            logger.log(e)
+            console.log(e)
             throw new InternalServerErrorException("Failed to get resource List");
         }
     }
@@ -65,8 +71,13 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      * @param userId 
      */
     async delete(id: string, user: User): Promise<any> {
+        let apis = await this.apiRepository.find({where:{resource:id}});
+        if(apis.length){
+            throw new BadRequestException("This resource has active apis, Pleae delete apis before deleting resource")
+        }
         try {
-            return this.resRepository.delete({id,user})
+           
+            return this.resRepository.delete({ id, user })
         } catch (e) {
             logger.log(e)
             throw new InternalServerErrorException("Failed to get resource List");

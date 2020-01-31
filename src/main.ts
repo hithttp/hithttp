@@ -30,15 +30,20 @@ async function bootstrap() {
     return new Date().getFullYear();
   })
   hbs.registerHelper("format-date", function (d) {
-    let nd =  new Date(d);
-    return  nd.toDateString()+" "+nd.getHours()+":"+nd.getMinutes()+":"+nd.getSeconds()
+    let nd = new Date(d);
+    return nd.toDateString() + " " + nd.getHours() + ":" + nd.getMinutes() + ":" + nd.getSeconds()
   })
-  hbs.registerHelper("section",function(name, options) { 
+  hbs.registerHelper("section", function (name, options) {
     if (!this._sections) this._sections = {};
-      this._sections[name] = options.fn(this); 
-      return null;
-    }
-)
+    this._sections[name] = options.fn(this);
+    return null;
+  })
+  hbs.registerHelper("ternary", function(var1, var2,res1,res2) {
+   if(var1 == var2){
+     return res1
+   }
+   else return res2;
+});
 
   app.setViewEngine('hbs');
   app.use(helmet());

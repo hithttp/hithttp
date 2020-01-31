@@ -162,8 +162,5 @@ $(document).ready(function($) {
 		})
 	};
 	OnePageNav();
-
-
-
 });
 

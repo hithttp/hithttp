@@ -5,9 +5,10 @@ import { Resource } from './resource.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CookieValidatorMiddleware } from '../common/middlewares/cookie-parser.middleware';
 import { UsersModule } from '../users/users.module';
+import { Api } from '../api/api.entity';
 
 @Module({
-  imports:[UsersModule,TypeOrmModule.forFeature([Resource])],
+  imports:[UsersModule,TypeOrmModule.forFeature([Resource,Api])],
   controllers: [ResourceController],
   providers: [ResourceService],
   exports:[ResourceService]
@@ -24,5 +25,4 @@ export class ResourceModule  implements NestModule {
         { path: 'resource/:id/delete', method: RequestMethod.GET },
       )
   }
-
 }

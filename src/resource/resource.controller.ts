@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Body, InternalServerErrorException, Get, ConflictException, Put, Delete, Res} from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Body, InternalServerErrorException, Get, ConflictException, Put, Delete, Res } from '@nestjs/common';
 import { ApiUseTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { Resource } from './resource.entity';
 import { Response } from 'express';
@@ -6,7 +6,7 @@ import { ResourceService } from './resource.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateResource} from './dtos/createResource.dto';
+import { CreateResource } from './dtos/createResource.dto';
 import { v4 } from 'uuid';
 import { UpdateResource } from './dtos/updateResource.dto';
 
@@ -17,7 +17,7 @@ export class ResourceController {
         @InjectRepository(Resource)
         private resRepository: Repository<Resource>,
         private readonly resService: ResourceService
-    ) {}
+    ) { }
 
     /**
      * 
@@ -31,14 +31,18 @@ export class ResourceController {
         description: 'The record has been successfully fetched.',
     })
     @ApiBearerAuth()
-    async createResource(@Request() req: any, @Body() body: CreateResource) {
+    async createResource(@Request() req: any, @Body() body: CreateResource,@Res() res :any) {
         let resource = new Resource();
         resource.name = body.name;
-        body.schema.id = body.name
-        resource.schema = body.schema;
+        resource.schema = {
+            id: body.name,
+            type: "object",
+            properties: body.properties
+        };
         resource.user = req.user;
         try {
-            return await this.resService.create(resource);
+            await this.resService.create(resource);
+           return res.redirect("resource/list")
         } catch (e) {
             console.log(e)
             if (e.status == 409) {
@@ -78,7 +82,7 @@ export class ResourceController {
     */
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Update Resource' })
-    @Put(":resId")
+    @Put()
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -86,13 +90,20 @@ export class ResourceController {
     @ApiBearerAuth()
     async updateResource(@Request() req: any, @Body() body: UpdateResource) {
         try {
-            let res = new Resource();
-            res.schema = JSON.stringify(body.schema);
-            res.name = body.name;
-            await this.resService.update(req.params.resId, req.user.id, res);
+            let resource = new Resource();
+            resource.name = body.name;
+            resource.id = body.id;
+            resource.schema = {
+                id: body.name,
+                type: "object",
+                properties: body.properties
+            };
+            resource.user = req.user;
+            await this.resService.update(resource.id, req.user.id, resource);
 
-            return { ...res, schema: JSON.parse(res.schema) };
+            return { ...resource, schema: resource.schema };
         } catch (e) {
+            console.log(e)
             if (e.status == 409) {
                 throw e
             }
@@ -113,63 +124,61 @@ export class ResourceController {
         description: 'The record has been successfully updated.',
     })
     @ApiBearerAuth()
-    async deleteResource(@Request() req: any) {
+    async deleteResource(@Request() req: any,@Res() res :any) {
         try {
             await this.resService.delete(req.params.resId, req.user.id);
-            return {
-                status: "success",
-                message: "Successfully deleted"
-            }
+            return res.redirect("list")
         } catch (e) {
-            if (e.status == 409) {
+            if (e.status == 400) {
                 throw e
             }
-            throw new InternalServerErrorException("Failed to create REsource")
+            console.log(e)
+            throw new InternalServerErrorException("Failed to Delete Resource")
         }
 
     }
-/** Resources operation start */
+    /** Resources operation start */
 
-@ApiExcludeEndpoint()
-@Get("new")
-async newResources(@Request() req:any,@Res() res :Response) {
-  let resources = await this.resService.findAll(req.user.id)
-  return  res.render("dashboard/pages/resources/create",{ layout: "dashboard/layout/dashboard", user: req.user,resources });
-}
+    @ApiExcludeEndpoint()
+    @Get("new")
+    async newResources(@Request() req: any, @Res() res: Response) {
+        let resources = await this.resService.findAll(req.user.id)
+        return res.render("dashboard/pages/resources/create", { layout: "dashboard/layout/dashboard", user: req.user, resources });
+    }
 
-@ApiExcludeEndpoint()
-  @Get("list")
-  async resources(@Request() req:any,@Res() res :Response) {
-    let resources = await this.resService.findAll(req.user.id)
-    let host = req.headers.host
-    return  res.render("dashboard/pages/resources/index",{ layout: "dashboard/layout/dashboard", user: req.user,resources,host });
-  }
+    @ApiExcludeEndpoint()
+    @Get("list")
+    async resources(@Request() req: any, @Res() res: Response) {
+        let resources = await this.resService.findAll(req.user.id)
+        let host = req.headers.host
+        return res.render("dashboard/pages/resources/index", { layout: "dashboard/layout/dashboard", user: req.user, resources, host });
+    }
 
-  @ApiExcludeEndpoint()
-  @Get(":id/view")
-  async viewResource(@Request() req:any,@Res() res :Response) {
-    let resource = await this.resService.findOne(req.params.id)
-    return  res.render("dashboard/pages/resources/view",{ layout: "dashboard/layout/dashboard", user: req.user,resource });
-  }
+    @ApiExcludeEndpoint()
+    @Get(":id/view")
+    async viewResource(@Request() req: any, @Res() res: Response) {
+        let resource = await this.resService.findOne(req.params.id)
+        return res.render("dashboard/pages/resources/view", { layout: "dashboard/layout/dashboard", user: req.user, resource });
+    }
 
-   @ApiExcludeEndpoint()
-  @Get(":id/edit")
-  async editResource(@Request() req:any,@Res() res :Response) {
-    let resources = await this.resService.findAll(req.user.id)
-   
-    return  res.render("dashboard/pages/resources/edit",{ layout: "dashboard/layout/dashboard", user: req.user,resources });
-  }
+    @ApiExcludeEndpoint()
+    @Get(":id/edit")
+    async editResource(@Request() req: any, @Res() res: Response) {
+        let resource = await this.resService.findOne(req.params.id)
 
-  @ApiExcludeEndpoint()
-  @Get(":id/delete")
-  async deleteResourceUI(@Request() req:any,@Res() res :Response) {
-    let resources = await this.resService.findAll(req.user.id)
-   
-    return  res.render("dashboard/pages/resources/delete",{ layout: "dashboard/layout/dashboard", user: req.user,resources });
-  }
+        return res.render("dashboard/pages/resources/edit", { layout: "dashboard/layout/dashboard", user: req.user, resource });
+    }
 
-  
-/** Resources operation end */
+    @ApiExcludeEndpoint()
+    @Get(":id/delete")
+    async deleteResourceUI(@Request() req: any, @Res() res: Response) {
+        let resources = await this.resService.findAll(req.user.id)
+
+        return res.render("dashboard/pages/resources/delete", { layout: "dashboard/layout/dashboard", user: req.user, resources });
+    }
+
+
+    /** Resources operation end */
 
 
 }

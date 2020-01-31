@@ -19,9 +19,6 @@ export class Resource {
     // @IsString()
     schema: any;
 
-    @Column("text",{array: true})
-    methods: string[];
-   
     @ApiModelProperty()
     @ManyToOne(_type => User,  user => user.resources)
     user: User;
