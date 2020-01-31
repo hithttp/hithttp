@@ -117,7 +117,7 @@
         'Authorization': 'Bearer ' + localStorage.getItem("HIT_HTTP_access_token")
       },
       body: JSON.stringify({ name, properties }) // body data type must match "Content-Type" header
-    }).then(response => {
+    }).then(async response => {
       let body = await response.json();
       if (!response.ok) {
         $.alert({
