@@ -82,7 +82,7 @@ export class ResourceController {
     */
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Update Resource' })
-    @Put(":resId")
+    @Put()
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -90,13 +90,20 @@ export class ResourceController {
     @ApiBearerAuth()
     async updateResource(@Request() req: any, @Body() body: UpdateResource) {
         try {
-            let res = new Resource();
-            res.schema = JSON.stringify(body.schema);
-            res.name = body.name;
-            await this.resService.update(req.params.resId, req.user.id, res);
+            let resource = new Resource();
+            resource.name = body.name;
+            resource.id = body.id;
+            resource.schema = {
+                id: body.name,
+                type: "object",
+                properties: body.properties
+            };
+            resource.user = req.user;
+            await this.resService.update(resource.id, req.user.id, resource);
 
-            return { ...res, schema: JSON.parse(res.schema) };
+            return { ...resource, schema: resource.schema };
         } catch (e) {
+            console.log(e)
             if (e.status == 409) {
                 throw e
             }
@@ -117,18 +124,16 @@ export class ResourceController {
         description: 'The record has been successfully updated.',
     })
     @ApiBearerAuth()
-    async deleteResource(@Request() req: any) {
+    async deleteResource(@Request() req: any,@Res() res :any) {
         try {
             await this.resService.delete(req.params.resId, req.user.id);
-            return {
-                status: "success",
-                message: "Successfully deleted"
-            }
+            return res.redirect("list")
         } catch (e) {
-            if (e.status == 409) {
+            if (e.status == 400) {
                 throw e
             }
-            throw new InternalServerErrorException("Failed to create REsource")
+            console.log(e)
+            throw new InternalServerErrorException("Failed to Delete Resource")
         }
 
     }
@@ -159,9 +164,9 @@ export class ResourceController {
     @ApiExcludeEndpoint()
     @Get(":id/edit")
     async editResource(@Request() req: any, @Res() res: Response) {
-        let resources = await this.resService.findAll(req.user.id)
+        let resource = await this.resService.findOne(req.params.id)
 
-        return res.render("dashboard/pages/resources/edit", { layout: "dashboard/layout/dashboard", user: req.user, resources });
+        return res.render("dashboard/pages/resources/edit", { layout: "dashboard/layout/dashboard", user: req.user, resource });
     }
 
     @ApiExcludeEndpoint()

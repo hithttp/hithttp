@@ -33,7 +33,7 @@
             <form id="res-create-form">
               <div class="form-group row">
                 <label class="col-sm-1" for="resName">Name</label>
-                <input type="text" class="form-control col-sm-11" id="resName"
+                <input type="text" class="form-control col-sm-8" id="resName"
                   placeholder="Name of the resouce you want to create">
               </div>
               <div class="form-group row">
@@ -41,22 +41,8 @@
                 <div class="row col-sm-10" id="field-list">
 
                   <div class="row col-sm-12 form-group ">
-                    <div class="row col-sm-6">
-                      <input type="text" class="form-control form-control-sm" name="1" placeholder="Field Name">
-                    </div>
-                    <div class="col-sm-5">
-                      <select class="form-control form-control-sm" name="1"
-                        aria-label="Example select with button addon">
-                        <option selected>Choose Type...</option>
-                        <option value="string">String</option>
-                        <option value="number">Number</option>
-                        <option value="boolean">Boolean</option>
-                      </select>
-                    </div>
-                    <div class="row col-sm-1">
-                      <button onclick="addFields();" class="float-right btn btn-sm btn-success" type="button"><i
-                          class="fa fa-plus"></i></button>
-                    </div>
+                    <button onclick="addFields();" class="float-right btn btn-sm btn-success col-sm-10" type="button"><i
+                        class="fa fa-plus"></i> Add Fields</button>
                   </div>
 
                 </div>
@@ -90,7 +76,7 @@
     fieldNo++;
     var objTo = document.getElementById('field-list')
     var divtest = document.createElement("div");
-    divtest.setAttribute("class", "row col-sm-12 form-group removeclass" + fieldNo);
+    divtest.setAttribute("class", "row col-sm-11 form-group removeclass" + fieldNo);
     var rdiv = 'removeclass' + fieldNo;
     divtest.innerHTML = '<div class="row col-sm-6"><input type="text" class="form-control form-control-sm" name="' + fieldNo + '" placeholder="Field Name"></div><div class="col-sm-5"><select class="form-control form-control-sm" name="' + fieldNo + '" aria-label="Select field type"><option selected>Choose Type...</option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select></div><div class="row col-sm-1"><button id="add-res-field" onclick="remove_fields(' + fieldNo + ');" class="float-right btn btn-sm btn-danger" type="button"><i class="fa fa-minus"></i></button></div>';
     objTo.appendChild(divtest)
@@ -114,26 +100,41 @@
     ev.preventDefault()
     let name = document.getElementById('resName').value;
     let properties = normalizeFields();
+    if(!Object.keys(properties).length){
+    $.alert({
+        title: 'OOps!',
+        content: 'Please add some fields to the resource. Like name,status etc...',
+    });
+    }
+    return;
     let res = await fetch("/resource", {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit
-     redirect: "follow",
+      redirect: "follow",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + localStorage.getItem("HIT_HTTP_access_token")
       },
       body: JSON.stringify({ name, properties }) // body data type must match "Content-Type" header
-    }) .then(response => {
-        // HTTP 301 response
-        // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
-        if (response.redirected) {
-            window.location.href = response.url;
-        }
+    }).then(response => {
+      let body = await response.json();
+      if (!response.ok) {
+        $.alert({
+          title: 'OOps!',
+          content: body.message|"Failed to create resource",
+        });
+        return;
+      }
+      // HTTP 301 response
+      // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
+      if (response.redirected) {
+        window.location.href = response.url;
+      }
     })
-    .catch(function(err) {
+      .catch(function (err) {
         console.info(err + " url: " + url);
-    });
+      });
   })
 </script>
 {{/section}}

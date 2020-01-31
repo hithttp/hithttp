@@ -1,15 +1,19 @@
 import { IsString, IsArray, IsEnum } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
-export enum RequestMethods {
-    "GET"="GET","POST"="POST","PUT"="PUT","OPTIONS"="OPTIONS","DELETE"="DELETE"
-   }
-
+class PropertyType {
+    @ApiModelProperty()
+    type:string
+}
 export class UpdateResource {
     @ApiModelProperty()
     @IsString()
-    name: string;
+    id: string;
 
     @ApiModelProperty()
-    schema: Object;
+    @IsString()
+    name: string;
+   
+    @ApiModelProperty({type:[PropertyType]})
+    properties:PropertyType[]
    
 }
