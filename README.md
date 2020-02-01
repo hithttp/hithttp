@@ -1,10 +1,6 @@
 # Hit Http
 
-# start 
-1. cd scripts, run ./bootstrap.sh, 
-2. run ./mcn.sh up
-3. cd multi-channel-network/nodescripts, run npm start (to start node api server)
-
+# Open http server for Everyone
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
