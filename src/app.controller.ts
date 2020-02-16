@@ -32,12 +32,6 @@ export class AppController {
     return { user: req.user };
   }
 
-  @ApiExcludeEndpoint()
-  @Get("forgot-password")
-  @Render('dashboard/forgot-password')
-  forgotPW(@Request() req:any) {
-    return { user: req.user };
-  }
 
   @ApiExcludeEndpoint()
   @Get("dashboard")

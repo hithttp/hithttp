@@ -118,7 +118,6 @@
       },
       body: JSON.stringify({ name, properties }) // body data type must match "Content-Type" header
     }).then(async response => {
-      let body = await response.json();
       if (!response.ok) {
         $.alert({
           title: 'OOps!',
@@ -133,7 +132,7 @@
       }
     })
       .catch(function (err) {
-        console.info(err + " url: " + url);
+        console.info(err);
       });
   })
 </script>
