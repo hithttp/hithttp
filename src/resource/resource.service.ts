@@ -37,7 +37,7 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
 
     async findAll(userId: string): Promise<Resource[]> {
         try {
-            return this.resRepository.find({ where: { userId } });
+            return this.resRepository.find({ where: { user:userId } });
         } catch (e) {
             logger.log(e)
             throw new InternalServerErrorException("Failed to get resource List");
