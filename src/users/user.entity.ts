@@ -30,6 +30,16 @@ export class User {
     @Column()
     @IsString()
     fullname: string;
+   
+    @ApiModelProperty()
+    @Column({length:6,nullable: true})
+    @IsString()
+    otp: string;
+
+    @ApiModelProperty()
+    @Column({type:"timestamp",nullable: true})
+    @IsString()
+    otpcreatedon: string;
 
     @ApiModelProperty()
     @Column({ length: "255" })
