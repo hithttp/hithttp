@@ -144,6 +144,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@crystallize/elasticloadbalancer-express-force-https@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@crystallize/elasticloadbalancer-express-force-https/-/elasticloadbalancer-express-force-https-2.4.0.tgz#9d1a74d1e8d6d99e4d3f6c2ac07b7c1586e5815a"
+  integrity sha512-jZ3QK375j0U+qz/CwH8h+IOdzurZgQtJmvO2ay849PWJe6Uj01y2mq+M52FwSqlOSzZWXDQZx0Lv/DgCDFcW+A==
+
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
