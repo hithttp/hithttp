@@ -9,11 +9,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import cookieParser = require('cookie-parser');
 import * as forcehttps from '@crystallize/elasticloadbalancer-express-force-https';
+import * as compression from 'compression';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   
   app.use(forcehttps());
-
+  app.use(compression());
   const options = new DocumentBuilder()
     .setSchemes("https")
     .setTitle('Hit Http Api Docs')
