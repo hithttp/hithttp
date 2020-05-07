@@ -57,7 +57,7 @@
     "csurf": "^1.10.0",
     "dotenv": "^8.2.0",
     "express-rate-limit": "^5.0.0",
-    "hbs": "^4.1.0",
+    "hbs": "^4.1.1",
     "helmet": "^3.21.0",
     "js-yaml": "^3.13.1",
     "jsonschema": "^1.2.4",
