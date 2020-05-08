@@ -37,7 +37,15 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
 
     async findAll(userId: string): Promise<Resource[]> {
         try {
-            return this.resRepository.find({ where: { user:userId } });
+            return this.resRepository.find({ where: { user: userId } });
+        } catch (e) {
+            logger.log(e)
+            throw new InternalServerErrorException("Failed to get resource List");
+        }
+    }
+    async findByUserId(userId: string): Promise<Resource[]> {
+        try {
+            return this.resRepository.find({ where: { user: userId } });
         } catch (e) {
             logger.log(e)
             throw new InternalServerErrorException("Failed to get resource List");
@@ -51,10 +59,10 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      */
     async update(resId: string, userId: string, res: Resource): Promise<any> {
         let existingResource = await this.resRepository.find({ where: { name: res.name, userId: userId } });
-        if (existingResource.length > 1 ) {
+        if (existingResource.length > 1) {
             throw new ConflictException("There is another resource with the same name");
         }
-        if(existingResource[0].id != resId){
+        if (existingResource[0].id != resId) {
             throw new InternalServerErrorException("Invalid resource found");
         }
         try {
@@ -71,12 +79,11 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      * @param userId 
      */
     async delete(id: string, user: User): Promise<any> {
-        let apis = await this.apiRepository.find({where:{resource:id}});
-        if(apis.length){
-            throw new BadRequestException("This resource has active apis, Pleae delete apis before deleting resource")
+        let apis = await this.apiRepository.find({ where: { resource: id } });
+        if (apis.length) {
+            throw new BadRequestException("This resource has active apis, Please delete apis before deleting this resource.")
         }
         try {
-           
             return this.resRepository.delete({ id, user })
         } catch (e) {
             logger.log(e)

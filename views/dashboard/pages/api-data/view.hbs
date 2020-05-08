@@ -24,8 +24,8 @@
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
           <div class="card-header py-3">
-            <h5 class="m-0 font-weight-bold text-primary">Model Details
-              <a href="/dashboard/resource/list" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
+            <h5 class="m-0 font-weight-bold text-primary">Detailed Entry
+              <a href="/dashboard/resource/{{resId}}/api-data" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
                   class="fas fa-arrow-left fa-sm text-white"></i> Back</a>
             </h5>
           </div>
@@ -39,29 +39,23 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><span class="font-weight-bold text-dark">Name</span> </td>
-                  <td>{{resource.name}}</td>
+                  <td>Id</td>
+                  <td>{{apiData.id}}</td>
+                </tr>
+                {{#each apiData.data as |value|}}
+                <tr>
+                  <td>{{@key}}</td>
+                  <td>{{value}}</td>
+                </tr>
+                {{/each}}
+                <tr>
+                  <td>CreatedAt</td>
+                  <td>{{format-date apiData.createdAt}}</td>
                 </tr>
                 <tr>
-                  <td><span class="font-weight-bold text-dark">Created On</span> </td>
-                  <td>{{format-date resource.createAt}}</td>
+                  <td>Last Updated At</td>
+                  <td>{{format-date apiData.updatedAt}}</td>
                 </tr>
-                <tr>
-                  <td><span class="font-weight-bold text-dark">Last Updated On</span> </td>
-                  <td>{{format-date resource.updatedAt}}</td>
-                </tr>
-                <tr>
-                  <td><span class="font-weight-bold text-dark">Schema</span> </td>
-                  <td>
-                    <ul class="list-group list-group-flush">
-                      {{#each resource.schema.properties }}
-                      <li class="list-group-item">{{@key}}: {{this.type}}</li>
-                      {{/each}}
-                    </ul>
-
-                  </td>
-                </tr>
-
               </tbody>
             </table>
           </div>
