@@ -12,6 +12,7 @@ import { ApiModule } from './api/api.module';
 import { CookieValidatorMiddleware } from './common/middlewares/cookie-parser.middleware';
 import { AppService } from './app.service';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { UserFormModule } from './user-form/user-form.module';
 let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
@@ -44,7 +45,8 @@ if (!config.DATABASE_NAME) {
     AuthModule,
     ResourceModule,
     ApiModule,
-    DashboardModule],
+    DashboardModule,
+    UserFormModule],
   controllers: [AppController],
   providers:[AppService]
 })

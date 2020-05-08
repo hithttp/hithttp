@@ -1,5 +1,6 @@
-import { Controller, UseGuards, Post, Request, Body, ForbiddenException, BadRequestException, HttpException, Get, Put, NotFoundException, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Post, Request, Body, ForbiddenException, BadRequestException, HttpException, Get, Put, NotFoundException, Delete, Res } from '@nestjs/common';
 import { ApiUseTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Response } from 'express';
 import { ResourceService } from '../resource/resource.service';
 import { ApiService } from './api.service';
 import { Validator } from 'jsonschema';
