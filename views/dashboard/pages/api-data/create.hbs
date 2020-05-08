@@ -1,0 +1,144 @@
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  {{>"sidebar"}}
+  <!-- End of Sidebar -->
+
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+      <!-- Topbar -->
+      {{>"topbar"}}
+      <!-- End of Topbar -->
+
+      <!-- Begin Page Content -->
+      <div class="container-fluid">
+
+        <!-- Page Heading -->
+        {{!-- <h1 class="h3 mb-4 text-gray-800">Resources</h1> --}}
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h5 class="m-0 font-weight-bold text-primary">Create New Api Entry
+              <a href="/dashboard/resource/{{resource.id}}/api-data"
+                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
+                  class="fas fa-arrow-left fa-sm text-white"></i> Back</a>
+            </h5>
+          </div>
+          <div class="card-body">
+            <form id="api-data-create-form">
+              {{#each apiData.data as |value|}}
+              <div class="form-group row">
+                <label class="col-sm-1">{{@key}}</label>
+                {{#iff value.type "==" "number" }}
+                <input type="{{value.type}}" name="{{@key}}" id="{{@key}}" data-type="{{value.type}}"
+                  class="form-control col-sm-11" required value="{{value.value}}">
+
+                {{/iff}}
+                {{#iff value.type "==" "string" }}
+                <input type="text" name="{{@key}}" id="{{@key}}" data-type="{{value.type}}"
+                  class="form-control col-sm-11" required value="{{value.value}}">
+
+                {{/iff}}
+                {{#iff value.type "==" "boolean" }}
+                <select data-type="{{value.type}}" required name="{{@key}}" id="{{@key}}" value="{{value.value}}">
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+
+
+                {{/iff}}
+              </div>
+              {{/each}}
+              <div class="form-group">
+                <button class="float-right btn btn-sm btn-primary">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- /.container-fluid -->
+
+    </div>
+    <!-- End of Main Content -->
+    <!-- Footer -->
+    {{>"footer"}}
+    <!-- End of Footer -->
+  </div>
+  <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+{{#section 'script'}}
+<script>
+  "use strict";
+  var fieldNo = 1;
+
+  function normalizeFields() {
+    let items = $("form#api-data-create-form").serializeArray();
+    let obj = {};
+    items.forEach(i => {
+      let d = {}
+      let inputType = $("#" + i.name).data("type");
+      switch (inputType) {
+        case "number":
+          obj[i.name] = +i.value
+          break;
+        case "boolean":
+          obj[i.name] = i.value == "true" ? true : false;
+           break;
+        default:
+          obj[i.name] = i.value
+      }
+
+    })
+
+    return obj;
+  }
+  document.getElementById("api-data-create-form").onsubmit = (async (ev) => {
+    ev.preventDefault()
+    let uniqKey = "{{user.uniqkey}}";
+    let resName = "{{resource.name}}";
+    let data = normalizeFields();
+    console.log(data);
+    let res = await fetch(`/api/${uniqKey}/${resName}`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      redirect: "follow",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem("HIT_HTTP_access_token")
+      },
+      body: JSON.stringify({ ...data }) // body data type must match "Content-Type" header
+    }).then(async response => {
+      let body = await response.json();
+      if (!response.ok) {
+        $.alert({
+          title: 'OOps!',
+          content: body.message,
+        });
+        return;
+      }
+      // HTTP 301 response
+      // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        $.alert({
+          title: 'WOW!',
+          content: 'Succesfully Created API Entry'
+        });
+      }
+    })
+      .catch(function (err) {
+        console.info(err);
+      });
+  })
+</script>
+{{/section}}

@@ -24,23 +24,27 @@
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
           <div class="card-header py-3">
-            <h5 class="m-0 font-weight-bold text-primary h5">Resource List
-              <a href="/dashboard/resource/new"
+            <h5 class="m-0 font-weight-bold text-primary h5">Api Data for: <code>{{resource.name}}</code>
+              <a href="/dashboard/resource/list"
                 class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right"><i
-                  class="fas fa-download fa-sm text-white"></i> New Resource</a>
-              <span class=" float-right text-sm text-info mr-4 h5">* Your unique Request id is:
-                <code>{{user.uniqkey}}</code> </span>
+                  class="fas fa-arrow-left fa-sm text-white"></i> Back </a>
+
+              <a href="/dashboard/resource/{{resource.id}}/api-data/new"
+                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm float-right mr-1"><i
+                  class="fas fa-plus fa-sm text-white"></i> Add New Data </a>
             </h5>
           </div>
           <div class="card-body">
             <div class="table-responsive">
 
               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                {{#if resources.length}}
+                {{#if apiData.length}}
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Base Url</th>
+                    <th>Id</th>
+                    {{#each apiData.0.data}}
+                    <th>{{@key}}</th>
+                    {{/each}}
                     <th>Created On</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -48,8 +52,10 @@
                 </thead>
                 <tfoot>
                   <tr>
-                    <th>Name</th>
-                    <th>Base Url</th>
+                    <th>Id</th>
+                    {{#each apiData.0.data}}
+                    <th>{{@key}}</th>
+                    {{/each}}
                     <th>Created On</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -57,26 +63,24 @@
                 </tfoot>
                 {{else}}
                 <tr>
-                  <td>No resources found</td>
+                  <td>No API Data found</td>
                 </tr>
                 {{/if}}
                 <tbody>
-                  {{#each resources}}
+                  {{#each apiData}}
                   <tr>
-                    <td>{{name}}</td>
-                    <td><a target="_blank"
-                        href="https://{{../host}}/api/{{../user.uniqkey}}/{{name}}">https://{{../host}}/api/{{../user.uniqkey}}/{{name}}</a>
-                    </td>
-                    <td>{{format-date createAt}}</td>
+                    <td>{{id}}</td>
+                    {{#each data as |val|}}
+                    <td>{{val}}</td>
+                    {{/each}}
+                    <td>{{format-date createdAt}}</td>
                     <td>{{format-date updatedAt}}</td>
                     <td>
-                      <a class="badge badge-secondary" title="View Api Data"
-                        href="/dashboard/resource/{{id}}/api-data"><i
-                          class="fa  fa-external-link-alt text-light"></i></a>
-                      <a class="badge badge-info" title="View" href="/dashboard/resource/{{id}}/view"><i
+                      <a class="badge badge-info" title="View"
+                        href="/dashboard/resource/{{../resource.id}}/api-data/{{id}}/view"><i
                           class="fa fa-eye text-light"></i></a>
-                      <a class="badge badge-primary" href="/dashboard/resource/{{id}}/edit" title="Edit"><i
-                          class="fa fa-pencil-alt text-light"></i></a>
+                      <a class="badge badge-primary" href="/dashboard/resource/{{../resource.id}}/api-data/{{id}}/edit"
+                        title="Edit"><i class="fa fa-pencil-alt text-light"></i></a>
                       <a class="badge badge-danger del-res-btn" data-id="{{id}}" title="Delete"><i
                           class="fa fa-trash text-light"></i></a>
                     </td>
@@ -122,7 +126,9 @@
     })
   })
   async function deleteResApiCall(id) {
-    let res = await fetch("/resource/" + id, {
+    let uniqKey = "{{user.uniqkey}}";
+    let resName = "{{resource.name}}";
+    let res = await fetch(`/api/${uniqKey}/${resName}/${id}`, {
       method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit
@@ -143,7 +149,7 @@
         console.log(body)
         $.alert({
           title: 'OOps!',
-          content: body.message?body.message:body.error,
+          content: body.message ? body.message : body.error,
         });
         return;
       }

@@ -11,18 +11,6 @@ import { Api } from '../api/api.entity';
   imports:[UsersModule,TypeOrmModule.forFeature([Resource,Api])],
   controllers: [ResourceController],
   providers: [ResourceService],
-  exports:[ResourceService]
+  exports:[ResourceService,TypeOrmModule]
 })
-export class ResourceModule  implements NestModule {
-  public configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(CookieValidatorMiddleware)
-      .forRoutes(
-        { path: 'resource/new', method: RequestMethod.GET },
-        { path: 'resource/list', method: RequestMethod.GET },
-        { path: 'resource/:id/view', method: RequestMethod.GET },
-        { path: 'resource/:id/edit', method: RequestMethod.GET },
-        { path: 'resource/:id/delete', method: RequestMethod.GET },
-      )
-  }
-}
+export class ResourceModule  {}

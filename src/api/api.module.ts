@@ -10,6 +10,7 @@ import { Api } from './api.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([User,Resource,Api]),ResourceModule],
   controllers: [ApiController],
-  providers: [ApiService]
+  providers: [ApiService],
+  exports:[ApiService]
 })
 export class ApiModule {}

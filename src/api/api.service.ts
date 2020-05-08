@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Any } from 'typeorm';
 import { User } from '../users/user.entity';
@@ -16,6 +16,24 @@ export class ApiService {
         private apiRepository: Repository<Api>,
     ) { }
 
+    async findByResId(resId: string, userId: string): Promise<Api[]> {
+        return await this.apiRepository.find({
+            where: {
+                resource: resId,
+                user: userId
+            }
+        })
+    }
+    async findOneByResId(id: string,resId:string, userId: string): Promise<Api> {
+        return await this.apiRepository.findOne({
+            where: {
+                id,
+                user: userId,
+                resource:resId
+            }
+        })
+    }
+    
     async getUserResourceSchema(uniqkey: string, resName: string): Promise<any> {
         let user = await this.userRepository.findOne({
             where: { uniqkey }
@@ -34,37 +52,57 @@ export class ApiService {
         return resource
     }
 
-    async storeUserResourceSchema(schema: Api): Promise<any> {
+    async save(schema: Api): Promise<any> {
         let schemaM = this.apiRepository.create(schema);
         return this.apiRepository.save(schemaM)
     }
     async listUserResourceSchema(uniqkey: string, resName: string): Promise<any> {
-        return  await this.apiRepository.createQueryBuilder("api")
-        .leftJoinAndSelect("api.resource", "resource")
-        .leftJoinAndSelect("api.user", "user")
-        .where("resource.name = :name", { name: resName })
-        .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
-        .select(["api.id","api.data","api.createdAt","api.updatedAt"])
-        .getMany();
+        return await this.apiRepository.createQueryBuilder("api")
+            .leftJoinAndSelect("api.resource", "resource")
+            .leftJoinAndSelect("api.user", "user")
+            .where("resource.name = :name", { name: resName })
+            .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
+            .select(["api.id", "api.data", "api.createdAt", "api.updatedAt"])
+            .getMany();
     }
     async updateUserResourceSchema(uniqkey: string, resName: string): Promise<any> {
-        return  await this.apiRepository.createQueryBuilder("api")
-        .leftJoinAndSelect("api.resource", "resource")
-        .leftJoinAndSelect("api.user", "user")
-        .where("resource.name = :name", { name: resName })
-        .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
-        .select(["api.id","api.data","api.createdAt","api.updatedAt"])
-        .getMany();
+        return await this.apiRepository.createQueryBuilder("api")
+            .leftJoinAndSelect("api.resource", "resource")
+            .leftJoinAndSelect("api.user", "user")
+            .where("resource.name = :name", { name: resName })
+            .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
+            .select(["api.id", "api.data", "api.createdAt", "api.updatedAt"])
+            .getMany();
     }
 
-    async getByIdUserResourceSchema(uniqkey: string, resName: string,id:string): Promise<any> {
-        return  await this.apiRepository.createQueryBuilder("api")
-        .leftJoinAndSelect("api.resource", "resource")
-        .leftJoinAndSelect("api.user", "user")
-        .where("resource.name = :name", { name: resName })
-        .andWhere("api.id = :id",{id})
-        .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
-        .select(["api.id","api.data","api.createdAt","api.updatedAt"])
-        .getOne();
+    async getByIdUserResourceSchema(uniqkey: string, resName: string, id: string): Promise<any> {
+        return await this.apiRepository.createQueryBuilder("api")
+            .leftJoinAndSelect("api.resource", "resource")
+            .leftJoinAndSelect("api.user", "user")
+            .where("resource.name = :name", { name: resName })
+            .andWhere("api.id = :id", { id })
+            .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
+            .select(["api.id", "api.data", "api.createdAt", "api.updatedAt"])
+            .getOne();
+    }
+    async deleteApiById(uniqkey: string, resName: string, id: string): Promise<any> {
+       let apiData =  await this.apiRepository.createQueryBuilder("api")
+            .leftJoinAndSelect("api.resource", "resource")
+            .leftJoinAndSelect("api.user", "user")
+            .where("resource.name = :name", { name: resName })
+            .andWhere("api.id = :id", { id })
+            .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
+            .select(["api.id", "api.data", "api.createdAt", "api.updatedAt"])
+            .getOne();
+            if(apiData){
+                await this.apiRepository.delete(id)
+                return {
+                    success:true,
+                    message:"Successfully deleted api"
+                }
+            }else{
+                throw new InternalServerErrorException("Failed to delete Api Data")
+            }
+
     }
 }
