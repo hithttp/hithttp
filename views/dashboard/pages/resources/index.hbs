@@ -41,6 +41,7 @@
                   <tr>
                     <th>Name</th>
                     <th>Base Url</th>
+                    <th>User Form link</th>
                     <th>Created On</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -50,6 +51,7 @@
                   <tr>
                     <th>Name</th>
                     <th>Base Url</th>
+                    <th>User Form link</th>
                     <th>Created On</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -66,6 +68,9 @@
                     <td>{{name}}</td>
                     <td><a target="_blank"
                         href="https://{{../host}}/api/{{../user.uniqkey}}/{{name}}">https://{{../host}}/api/{{../user.uniqkey}}/{{name}}</a>
+                    </td>
+                    <td><a target="_blank"
+                        href="https://{{../host}}/user-form/{{../user.uniqkey}}/{{name}}">https://{{../host}}/user-form/{{../user.uniqkey}}/{{name}}</a>
                     </td>
                     <td>{{format-date createAt}}</td>
                     <td>{{format-date updatedAt}}</td>
@@ -143,7 +148,7 @@
         console.log(body)
         $.alert({
           title: 'OOps!',
-          content: body.message?body.message:body.error,
+          content: body.message ? body.message : body.error,
         });
         return;
       }

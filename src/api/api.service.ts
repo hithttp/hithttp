@@ -65,7 +65,7 @@ export class ApiService {
             .select(["api.id", "api.data", "api.createdAt", "api.updatedAt"])
             .getMany();
     }
-    async updateUserResourceSchema(uniqkey: string, resName: string): Promise<any> {
+    async getOneUserResourceSchema(uniqkey: string, resName: string): Promise<any> {
         return await this.apiRepository.createQueryBuilder("api")
             .leftJoinAndSelect("api.resource", "resource")
             .leftJoinAndSelect("api.user", "user")
