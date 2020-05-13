@@ -1,4 +1,4 @@
-import { Injectable, Request, InternalServerErrorException, Logger, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
+import { Injectable, Request, InternalServerErrorException, Logger, NotFoundException, ConflictException, ForbiddenException, HttpService, BadRequestException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { hashSync } from 'bcrypt';
 import { Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SES } from 'aws-sdk'
 import { readFileSync } from 'fs';
 import { handlebars } from 'hbs';
+import { RegisterUser } from './dtos/register.dto';
 
 const ses = new SES()
 
@@ -20,10 +21,14 @@ export class UsersService extends TypeOrmCrudService<User> {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly httpService: HttpService
     ) {
         super(userRepository);
     }
+    reCaptchaVerifyUrl = "https://www.google.com/recaptcha/api/siteverify"
+    siteKey = "6LeHf_YUAAAAAPAE49jLjZbwHqdMdRnulV2rshtZ" //process.env.RECAPTCHA_SITE_KEY
+
     async initResetPw(email: string): Promise<any> {
         let existinguser = await this.userRepository.findOne({ where: { email } });
         if (!existinguser) {
@@ -84,12 +89,17 @@ export class UsersService extends TypeOrmCrudService<User> {
             throw new InternalServerErrorException("Failed to Initiate otp for user");
         }
     }
-    async register(req: User): Promise<any> {
-        let existinguser = await this.userRepository.findOne({ where: { email: req.email } });
-        if (existinguser) {
-            throw new ConflictException("User Already registered");
+    async register(userReq: RegisterUser): Promise<any> {
+        let {data} = await this.httpService.post(`${this.reCaptchaVerifyUrl}?secret=${this.siteKey}&response=${userReq.captchaRes}`).toPromise();
+        if(!data.success){
+            throw new BadRequestException("Captcha Verification failed");
         }
-        let user = this.userRepository.create(req);
+        let existinguser = await this.userRepository.findOne({ where: { email: userReq.email } });
+        if (existinguser) {
+            throw new ConflictException("User already registered");
+        }
+
+        let user = this.userRepository.create(userReq);
         user.password = hashSync(user.password, 10);
         user.token = v4();
         user.uniqkey = generate({
@@ -99,12 +109,9 @@ export class UsersService extends TypeOrmCrudService<User> {
         try {
             await this.userRepository.save(user);
             delete user.password;
-            const payload = {
-                token: user.token
-            };
             return {
-                access_token: this.jwtService.sign(payload),
-                uniqkey: user.uniqkey
+                success: true,
+                message: "Successfully Registered"
             };
         } catch (e) {
             logger.error(e)
@@ -112,13 +119,13 @@ export class UsersService extends TypeOrmCrudService<User> {
         }
     }
 
-    async updatePassword(email:string,otp: string,password:string): Promise<any> {
+    async updatePassword(email: string, otp: string, password: string): Promise<any> {
         try {
-            let existinguser = await this.userRepository.findOne({ where: { otp,email } });
+            let existinguser = await this.userRepository.findOne({ where: { otp, email } });
             if (!existinguser) {
                 throw new ForbiddenException("User not registered");
             }
-            if(existinguser.otpcreatedon && (+new Date() - +new Date(existinguser.otpcreatedon) >= 600000)){
+            if (existinguser.otpcreatedon && (+new Date() - +new Date(existinguser.otpcreatedon) >= 600000)) {
                 throw new ForbiddenException("OTP expired")
             }
             existinguser.password = hashSync(password, 10);
@@ -128,7 +135,7 @@ export class UsersService extends TypeOrmCrudService<User> {
             await this.userRepository.save(existinguser);
 
             return {
-                success:true
+                success: true
             }
 
 
