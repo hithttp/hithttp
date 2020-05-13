@@ -119,16 +119,17 @@
       body: JSON.stringify({ name, properties }) // body data type must match "Content-Type" header
     }).then(async response => {
       if (!response.ok) {
+        console.log(response)
         $.alert({
           title: 'OOps!',
-          content: body.message|"Failed to create resource",
+          content: response.message|"Failed to create resource",
         });
         return;
       }
       // HTTP 301 response
       // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
       if (response.redirected) {
-        window.location.href = response.url;
+        window.location.replace(response.url);
       }
     })
       .catch(function (err) {
