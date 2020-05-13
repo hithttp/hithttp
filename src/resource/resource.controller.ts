@@ -43,7 +43,7 @@ export class ResourceController {
         resource.user = req.user;
         try {
             await this.resService.create(resource);
-            return res.redirect("resource/list")
+            return res.redirect("/dashboard/resource/list")
         } catch (e) {
             console.log(e)
             if (e.status == 409) {
