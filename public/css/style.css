@@ -579,3 +579,19 @@ textarea {
   font-weight: normal;
 }
     
+#trep{
+  width: 115px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+#trep:after {
+	content: "";
+  animation: spin 5s linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes spin {
+  0% { content:"HTTP"; }
+  100% { content:"REST" }
+}

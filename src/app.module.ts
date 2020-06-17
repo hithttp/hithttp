@@ -17,7 +17,8 @@ let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
   DATABASE_URL: process.env.DATABASE_URL,
-  DATABASE_NAME: process.env.DATABASE_NAME
+  DATABASE_NAME: process.env.DATABASE_NAME,
+  DATABASE_PORT: process.env.DATABASE_PORT
 };
 if (!config.DATABASE_NAME) {
   let envConfig = dotenv.parse(fs.readFileSync('development.env'))
@@ -25,7 +26,8 @@ if (!config.DATABASE_NAME) {
     DATABASE_USER: envConfig.DATABASE_USER,
     DATABASE_PASSWORD: envConfig.DATABASE_PASSWORD,
     DATABASE_URL: envConfig.DATABASE_URL,
-    DATABASE_NAME: envConfig.DATABASE_NAME
+    DATABASE_NAME: envConfig.DATABASE_NAME,
+    DATABASE_PORT: envConfig.DATABASE_PORT
   }
 }
 @Module({
@@ -34,7 +36,7 @@ if (!config.DATABASE_NAME) {
     TypeOrmModule.forRoot({
       type: "postgres",
       host: config.DATABASE_URL,
-      port: 5432,
+      port: +config["DATABASE_PORT"] | 5432,
       username: config["DATABASE_USER"],
       password: config["DATABASE_PASSWORD"],
       database: config["DATABASE_NAME"],
@@ -48,7 +50,7 @@ if (!config.DATABASE_NAME) {
     DashboardModule,
     UserFormModule],
   controllers: [AppController],
-  providers:[AppService]
+  providers: [AppService]
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
