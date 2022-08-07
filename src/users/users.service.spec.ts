@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users.module';
-import { NetworkHelper } from '../network/network.helper';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -22,7 +21,7 @@ describe('UsersService', () => {
         }),
         UsersModule
       ],
-      providers: [UsersService,NetworkHelper],
+      providers: [UsersService],
     }).compile();
 
     service = module.get<UsersService>(UsersService);

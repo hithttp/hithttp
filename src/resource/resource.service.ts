@@ -20,12 +20,12 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
     }
 
     async create(resource: Resource): Promise<Resource> {
-        let existingResource = await this.resRepository.findOne({ where: { name: resource.name, userId: resource.user.id } });
-        if (existingResource) {
-            throw new ConflictException("Resource already exists");
-        }
-        let newRes = this.resRepository.create(resource);
         try {
+            let existingResource = await this.resRepository.findOne({ where: { name: resource.name, user: resource.user.id } });
+            if (existingResource) {
+                throw new ConflictException("Resource already exists");
+            }
+            let newRes = this.resRepository.create(resource);
             await this.resRepository.save(newRes);
             delete newRes.user;
             return newRes;
@@ -58,7 +58,7 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      * @param res 
      */
     async update(resId: string, userId: string, res: Resource): Promise<any> {
-        let existingResource = await this.resRepository.find({ where: { name: res.name, userId: userId } });
+        let existingResource = await this.resRepository.find({ where: { name: res.name, user: userId } });
         if (existingResource.length > 1) {
             throw new ConflictException("There is another resource with the same name");
         }
