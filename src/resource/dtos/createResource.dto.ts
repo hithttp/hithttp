@@ -1,14 +1,14 @@
 import { IsString, IsArray, IsEnum, ValidateNested } from 'class-validator';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 class PropertyType {
-    @ApiModelProperty()
+    @ApiProperty()
     type:string
 }
 export class CreateResource {
-    @ApiModelProperty()
+    @ApiProperty()
     @IsString()
     name: string;
 
-    @ApiModelProperty({type:[PropertyType]})
+    @ApiProperty({type:[PropertyType]})
     properties:PropertyType[]
 }

@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { IsString, IsEmail, IsUUID, Length, IsOptional, IsPhoneNumber, IsEnum, IsMobilePhone } from 'class-validator';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Resource } from '../resource/resource.entity';
 import { Api } from '../api/api.entity';
 
@@ -21,27 +21,27 @@ export class User {
     @IsString()
     uniqkey: string;
 
-    @ApiModelProperty()
+    @ApiProperty()
     @Column({ unique: true })
     @IsEmail()
     email: string;
 
-    @ApiModelProperty()
+    @ApiProperty()
     @Column()
     @IsString()
     fullname: string;
    
-    @ApiModelProperty()
+    @ApiProperty()
     @Column({length:6,nullable: true})
     @IsString()
     otp: string;
 
-    @ApiModelProperty()
+    @ApiProperty()
     @Column({type:"timestamp",nullable: true})
     @IsString()
     otpcreatedon: string;
 
-    @ApiModelProperty()
+    @ApiProperty()
     @Column({ length: "255" })
     @IsString()
     @Length(8, 15)

@@ -13,6 +13,7 @@ import { CookieValidatorMiddleware } from './common/middlewares/cookie-parser.mi
 import { AppService } from './app.service';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { UserFormModule } from './user-form/user-form.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 let config = {
   DATABASE_USER: process.env.DATABASE_USER,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
@@ -33,6 +34,10 @@ if (!config.DATABASE_NAME) {
 @Module({
   imports: [
     UsersModule, ConfigModule,
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
     TypeOrmModule.forRoot({
       type: "postgres",
       host: config.DATABASE_URL,

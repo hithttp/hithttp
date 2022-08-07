@@ -2,7 +2,7 @@ version: '2'
 services:
   userdb:
     container_name: userdb
-    image: postgres:11.5
+    image: postgres:12.11
     restart: always
     ports:
       - "5432:5432"

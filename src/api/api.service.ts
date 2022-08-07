@@ -19,21 +19,21 @@ export class ApiService {
     async findByResId(resId: string, userId: string): Promise<Api[]> {
         return await this.apiRepository.find({
             where: {
-                resource: resId,
-                user: userId
+                resource: { id: resId },
+                user: { id: userId }
             }
         })
     }
-    async findOneByResId(id: string,resId:string, userId: string): Promise<Api> {
+    async findOneByResId(id: string, resId: string, userId: string): Promise<Api> {
         return await this.apiRepository.findOne({
             where: {
                 id,
-                user: userId,
-                resource:resId
+                user: { id: userId },
+                resource: { id: resId }
             }
         })
     }
-    
+
     async getUserResourceSchema(uniqkey: string, resName: string): Promise<any> {
         let user = await this.userRepository.findOne({
             where: { uniqkey }
@@ -86,7 +86,7 @@ export class ApiService {
             .getOne();
     }
     async deleteApiById(uniqkey: string, resName: string, id: string): Promise<any> {
-       let apiData =  await this.apiRepository.createQueryBuilder("api")
+        let apiData = await this.apiRepository.createQueryBuilder("api")
             .leftJoinAndSelect("api.resource", "resource")
             .leftJoinAndSelect("api.user", "user")
             .where("resource.name = :name", { name: resName })
@@ -94,15 +94,15 @@ export class ApiService {
             .andWhere("user.uniqkey = :uniqkey", { uniqkey: uniqkey })
             .select(["api.id", "api.data", "api.createdAt", "api.updatedAt"])
             .getOne();
-            if(apiData){
-                await this.apiRepository.delete(id)
-                return {
-                    success:true,
-                    message:"Successfully deleted api"
-                }
-            }else{
-                throw new InternalServerErrorException("Failed to delete Api Data")
+        if (apiData) {
+            await this.apiRepository.delete(id)
+            return {
+                success: true,
+                message: "Successfully deleted api"
             }
+        } else {
+            throw new InternalServerErrorException("Failed to delete Api Data")
+        }
 
     }
 }

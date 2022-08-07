@@ -1,23 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as rateLimit from 'express-rate-limit';
 import * as hbs from "hbs";
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import cookieParser = require('cookie-parser');
-import * as forcehttps from '@crystallize/elasticloadbalancer-express-force-https';
 import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.use(forcehttps());
   app.use(compression());
   const options = new DocumentBuilder()
-    .setSchemes("https")
+    .addServer("https")
     .setTitle('Hit Http Api Docs')
     .setDescription('Find all the api info running on this server')
     .addBearerAuth()
@@ -76,15 +73,13 @@ async function bootstrap() {
     }
 });
   app.setViewEngine('hbs');
-  app.use(helmet());
+  app.use(helmet.contentSecurityPolicy({
+    directives: {
+      "script-src": ["'self'", "'unsafe-inline'"],
+    },
+  }));
   app.enableCors();
-  app.use(cookieParser())
-  app.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe())
   // app.use(csurf());
   await app.listen(3000);

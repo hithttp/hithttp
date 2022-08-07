@@ -1,5 +1,5 @@
 import { Controller, Post, UseGuards, Request, Body, InternalServerErrorException, Get, ConflictException, Put, Delete, Res } from '@nestjs/common';
-import { ApiUseTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { Resource } from './resource.entity';
 import { Response } from 'express';
 import { ResourceService } from './resource.service';
@@ -10,7 +10,7 @@ import { CreateResource } from './dtos/createResource.dto';
 import { UpdateResource } from './dtos/updateResource.dto';
 
 @Controller('resource')
-@ApiUseTags('Resource')
+@ApiTags('Resource')
 export class ResourceController {
     constructor(
         @InjectRepository(Resource)
@@ -23,7 +23,7 @@ export class ResourceController {
      * Create Resource
      */
     @UseGuards(AuthGuard('jwt'))
-    @ApiOperation({ title: 'Create resource' })
+    @ApiOperation({ summary: 'Create resource' })
     @Post()
     @ApiResponse({
         status: 200,
@@ -59,7 +59,7 @@ export class ResourceController {
     * Resource List
     */
     @UseGuards(AuthGuard('jwt'))
-    @ApiOperation({ title: 'Resource List' })
+    @ApiOperation({ summary: 'Resource List' })
     @Get()
     @ApiResponse({
         status: 200,
@@ -82,7 +82,7 @@ export class ResourceController {
     * Update Resource
     */
     @UseGuards(AuthGuard('jwt'))
-    @ApiOperation({ title: 'Update Resource' })
+    @ApiOperation({ summary: 'Update Resource' })
     @Put()
     @ApiResponse({
         status: 200,
@@ -120,7 +120,7 @@ export class ResourceController {
     * Delete Resource
     */
     @UseGuards(AuthGuard('jwt'))
-    @ApiOperation({ title: 'Delete Resource' })
+    @ApiOperation({ summary: 'Delete Resource' })
     @Delete(":resId")
     @ApiResponse({
         status: 200,

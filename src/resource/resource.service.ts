@@ -21,7 +21,7 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
 
     async create(resource: Resource): Promise<Resource> {
         try {
-            let existingResource = await this.resRepository.findOne({ where: { name: resource.name, user: resource.user.id } });
+            let existingResource = await this.resRepository.findOne({ where: { name: resource.name, user: { id: resource.user.id } } });
             if (existingResource) {
                 throw new ConflictException("Resource already exists");
             }
@@ -37,7 +37,7 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
 
     async findAll(userId: string): Promise<Resource[]> {
         try {
-            return this.resRepository.find({ where: { user: userId } });
+            return this.resRepository.find({ where: { user: { id: userId } } });
         } catch (e) {
             logger.log(e)
             throw new InternalServerErrorException("Failed to get resource List");
@@ -45,7 +45,7 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
     }
     async findByUserId(userId: string): Promise<Resource[]> {
         try {
-            return this.resRepository.find({ where: { user: userId } });
+            return this.resRepository.find({ where: { user: { id: userId } } });
         } catch (e) {
             logger.log(e)
             throw new InternalServerErrorException("Failed to get resource List");
@@ -58,7 +58,7 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      * @param res 
      */
     async update(resId: string, userId: string, res: Resource): Promise<any> {
-        let existingResource = await this.resRepository.find({ where: { name: res.name, user: userId } });
+        let existingResource = await this.resRepository.find({ where: { name: res.name, user: { id: userId } } });
         if (existingResource.length > 1) {
             throw new ConflictException("There is another resource with the same name");
         }
@@ -79,7 +79,7 @@ export class ResourceService extends TypeOrmCrudService<Resource> {
      * @param userId 
      */
     async delete(id: string, user: User): Promise<any> {
-        let apis = await this.apiRepository.find({ where: { resource: id } });
+        let apis = await this.apiRepository.findBy({ resource: { id } })
         if (apis.length) {
             throw new BadRequestException("This resource has active apis, Please delete apis before deleting this resource.")
         }

@@ -1,5 +1,5 @@
 import { Controller, Post, UseGuards, Request, Body, InternalServerErrorException, Get, ConflictException, Put, Delete, Res, Param } from '@nestjs/common';
-import { ApiUseTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { Resource } from '../resource/resource.entity';
 import { Response } from 'express';
 import { ResourceService } from '../resource/resource.service';
@@ -28,15 +28,15 @@ export class DashboardController {
 
     @Get("resource/:id/view")
     async viewResource(@Request() req: any, @Res() res: Response) {
-        let resource = await this.resService.findOne(req.params.id)
-        return res.render("dashboard/pages/resources/view", { layout: "dashboard/layout/dashboard", user: req.user, resource });
+        let resource = await this.resService.find(req.params.id)
+        return res.render("dashboard/pages/resources/view", { layout: "dashboard/layout/dashboard", user: req.user, resource: resource[0] });
     }
 
     @Get("resource/:id/edit")
     async editResource(@Request() req: any, @Res() res: Response) {
-        let resource = await this.resService.findOne(req.params.id)
+        let resource = await this.resService.find(req.params.id)
 
-        return res.render("dashboard/pages/resources/edit", { layout: "dashboard/layout/dashboard", user: req.user, resource });
+        return res.render("dashboard/pages/resources/edit", { layout: "dashboard/layout/dashboard", user: req.user, resource:resource[0] });
     }
 
     @Get("resource/:id/delete")
@@ -53,23 +53,23 @@ export class DashboardController {
 
     @Get("resource/:resId/api-data/new")
     async newApiData(@Request() req: any, @Res() res: Response) {
-        let resource = await this.resService.findOne(req.params.resId);
+        let resource = await this.resService.find(req.params.resId);
         let apiData = {
             data: {}
         }
-        for (let key in resource.schema.properties) {
+        for (let key in resource[0].schema.properties) {
             apiData.data[key] = {
                 value: "",
-                type: resource.schema.properties[key].type
+                type: resource[0].schema.properties[key].type
             }
         }
-        return res.render("dashboard/pages/api-data/create", { layout: "dashboard/layout/dashboard", user: req.user, apiData,resource });
+        return res.render("dashboard/pages/api-data/create", { layout: "dashboard/layout/dashboard", user: req.user, apiData, resource });
     }
 
     @Get("resource/:id/api-data")
     async viewResourceApiData(@Param("id") resId: string, @Request() req: any, @Res() res: Response) {
         let apiData = await this.apiService.findByResId(resId, req.user.id)
-        let resource = await this.resService.findOne(req.params.id)
+        let resource = await this.resService.find(req.params.id)
         return res.render("dashboard/pages/resources/api-data", { layout: "dashboard/layout/dashboard", user: req.user, apiData, resource });
     }
 

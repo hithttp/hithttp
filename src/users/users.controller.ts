@@ -1,15 +1,14 @@
-import { Controller, Get, Request, Post, UseGuards, HttpCode, HttpStatus, Body, NotFoundException, ConflictException, BadRequestException, Render, ForbiddenException, Res, HttpService } from '@nestjs/common';
+import { Controller, Get, Request, Post, UseGuards, HttpCode, HttpStatus, Body, NotFoundException, ConflictException, BadRequestException, Render, ForbiddenException, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service'
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { handlebars } from 'hbs';
 import {
     ApiBearerAuth,
     ApiOperation,
     ApiResponse,
-    ApiUseTags,
+    ApiTags,
     ApiBadRequestResponse,
     ApiExcludeEndpoint,
 } from '@nestjs/swagger';
@@ -17,7 +16,7 @@ import { RegisterUser } from './dtos/register.dto';
 
 
 @Controller('')
-@ApiUseTags('Users')
+@ApiTags('Users')
 export class UsersController {
     constructor(
         @InjectRepository(User)
@@ -30,7 +29,7 @@ export class UsersController {
      * Get current user details
      */
     @UseGuards(AuthGuard('jwt'))
-    @ApiOperation({ title: 'Get my details' })
+    @ApiOperation({ summary: 'Get my details' })
     @Get('me')
     @ApiResponse({
         status: 200,
@@ -65,7 +64,7 @@ export class UsersController {
     forgotPW(@Request() req: any) { }
 
     @Post('verify-email')
-    @ApiOperation({ title: 'Register User' })
+    @ApiOperation({ summary: 'Register User' })
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -81,7 +80,7 @@ export class UsersController {
     }
 
     @Get('reset-password')
-    @ApiOperation({ title: 'Reset Password' })
+    @ApiOperation({ summary: 'Reset Password' })
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -92,7 +91,7 @@ export class UsersController {
     }
 
     @Post('reset-password')
-    @ApiOperation({ title: 'Reset Password' })
+    @ApiOperation({ summary: 'Reset Password' })
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',

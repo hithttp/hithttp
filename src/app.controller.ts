@@ -1,6 +1,6 @@
 import { Controller, Get, Render, Res,Request, UseGuards, UsePipes } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiOperation, ApiUseTags, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ResourceService } from './resource/resource.service';
 
@@ -56,8 +56,8 @@ export class AppController {
   }
   
   @Get('/ping')
-  @ApiOperation({ title: 'Ping Pong' })
-  @ApiUseTags('Ping Pong')
+  @ApiOperation({ summary: 'Ping Pong' })
+  @ApiTags('Ping Pong')
   async ping() {
     return 'pong';
   }

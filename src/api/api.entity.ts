@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { IsString,IsOptional } from 'class-validator';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
 import { Resource } from '../resource/resource.entity';
 
@@ -14,11 +14,11 @@ export class Api {
     @Column({ type: "jsonb", nullable: true })
     data: any;
    
-    @ApiModelProperty()
+    @ApiProperty()
     @ManyToOne(_type => User,  user => user.apis)
     user: User;
 
-    @ApiModelProperty()
+    @ApiProperty()
     @ManyToOne(_type => Resource,  resource => resource.apis)
     resource: Resource;
     

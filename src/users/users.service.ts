@@ -1,4 +1,5 @@
-import { Injectable, Request, InternalServerErrorException, Logger, NotFoundException, ConflictException, ForbiddenException, HttpService, BadRequestException } from '@nestjs/common';
+import { Injectable, Request, InternalServerErrorException, Logger, NotFoundException, ConflictException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { v4 } from 'uuid';
 import { hashSync } from 'bcrypt';
 import { Repository } from 'typeorm';
@@ -7,12 +8,10 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { User } from './user.entity';
 import { generate } from 'randomstring';
 import { JwtService } from '@nestjs/jwt';
-import { SES } from 'aws-sdk'
 import { readFileSync } from 'fs';
 import { handlebars } from 'hbs';
 import { RegisterUser } from './dtos/register.dto';
 
-const ses = new SES()
 
 const logger = new Logger("UsersService")
 
@@ -76,10 +75,10 @@ export class UsersService extends TypeOrmCrudService<User> {
                 ReturnPath: "no-reply@hithttp.com",
                 Source: "no-reply@hithttp.com"
             };
-            ses.sendEmail(params, (err, data) => {
-                if (err) console.log(err, err.stack)
-                else console.log(data)
-            })
+            // ses.sendEmail(params, (err, data) => {
+            //     if (err) console.log(err, err.stack)
+            //     else console.log(data)
+            // })
             return {
                 success: true
             }
@@ -90,8 +89,8 @@ export class UsersService extends TypeOrmCrudService<User> {
         }
     }
     async register(userReq: RegisterUser): Promise<any> {
-        let {data} = await this.httpService.post(`${this.reCaptchaVerifyUrl}?secret=${this.siteKey}&response=${userReq.captchaRes}`).toPromise();
-        if(!data.success){
+        let { data } = await this.httpService.post(`${this.reCaptchaVerifyUrl}?secret=${this.siteKey}&response=${userReq.captchaRes}`).toPromise();
+        if (!data.success) {
             throw new BadRequestException("Captcha Verification failed");
         }
         let existinguser = await this.userRepository.findOne({ where: { email: userReq.email } });

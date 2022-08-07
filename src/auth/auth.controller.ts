@@ -7,12 +7,12 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { LoginUser } from './dto/login.dto';
 
-@ApiUseTags('Auth')
+@ApiTags('Auth')
 @Controller('')
 export class AuthController {
   constructor(
@@ -22,7 +22,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('custom'))
   @Post('login')
-  @ApiOperation({ title: 'Login User' })
+  @ApiOperation({ summary: 'Login User' })
   async login(@Request() req: any,@Body() body:LoginUser,@Res() res :any) {
     let loginRes = await this.authService.login(req.user)
     res.cookie("__hit_http__session__", loginRes.access_token,{maxAge: 86400000}); 
@@ -32,7 +32,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
-  @ApiOperation({ title: 'Log out' })
+  @ApiOperation({ summary: 'Log out' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   async logout(@Request() req: any,@Res() res :any) {
