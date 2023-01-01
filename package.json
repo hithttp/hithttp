@@ -55,7 +55,7 @@
     "webpack": "^5.74.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^9.0.0",
+    "@nestjs/cli": "^9.1.8",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
     "@types/cookie-parser": "^1.4.3",
